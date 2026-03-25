@@ -156,16 +156,16 @@ export interface Lead {
   status: LeadStatus;
   createdAt: string;
   // Attribution
-  adSetName: string;
-  adName: string;
-  landingPageUrl: string;
-  utm: UTMTracking;
+  adSetName?: string;
+  adName?: string;
+  landingPageUrl?: string;
+  utm?: UTMTracking;
   // Quality
   leadScore: number;
   leadQuality: LeadQuality;
   budgetRange: string;
   urgencyLevel: string;
-  otherInstitutes: string;
+  otherInstitutes?: string;
   // Enrichment
   currentEducation?: string;
   graduationYear?: string;
