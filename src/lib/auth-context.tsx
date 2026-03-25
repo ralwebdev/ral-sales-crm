@@ -1,10 +1,13 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import { User, UserRole } from "./types";
-import { mockUsers } from "./mock-data";
 
-// Extended mock users for new roles
+// All CRM users — must match mockUsers in mock-data.ts
 const allUsers: User[] = [
-  ...mockUsers,
+  { id: "u1", name: "Amit Sharma", email: "amit@redapple.com", role: "admin" },
+  { id: "u2", name: "Priya Mehta", email: "priya@redapple.com", role: "marketing_manager" },
+  { id: "u3", name: "Rahul Verma", email: "rahul@redapple.com", role: "telecaller" },
+  { id: "u4", name: "Sneha Patel", email: "sneha@redapple.com", role: "telecaller" },
+  { id: "u5", name: "Neha Gupta", email: "neha@redapple.com", role: "counselor" },
   { id: "u6", name: "Vikram Singh", email: "vikram@redapple.com", role: "telecalling_manager" },
   { id: "u7", name: "Rajesh Kapoor", email: "rajesh@redapple.com", role: "owner" },
 ];
