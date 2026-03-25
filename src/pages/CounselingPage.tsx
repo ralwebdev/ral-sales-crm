@@ -139,7 +139,7 @@ export default function CounselingPage() {
       </div>
 
       {/* KPI Ribbon */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
         <StatCard title="Walk-ins Today" value={walkInToday.length} icon={<Users className="h-5 w-5" />} />
         <StatCard title="Completed Today" value={completedToday.length} icon={<CheckCircle2 className="h-5 w-5" />} />
         <StatCard title="No Shows" value={walkInNoShow.length} icon={<AlertTriangle className="h-5 w-5" />} />
