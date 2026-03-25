@@ -298,7 +298,7 @@ export default function TelecallingPage() {
       const updatedLeads = allLeadsData.map((l) =>
         l.id === selectedLead.id
           ? { ...l, walkInStatus: "Scheduled" as const, walkInDate: outcomeForm.walkInDate, walkInTime: outcomeForm.walkInTime, walkInCounselor: "u5", assignedCounselor: "u5",
-              activities: [...(l.activities || []), { id: `act${Date.now()}`, type: "Walk-in Scheduled" as const, description: `Walk-in scheduled for ${outcomeForm.walkInDate}`, timestamp: new Date().toISOString(), performedBy: currentUser.id }] }
+              activities: [...(l.activities || []), { id: `act${Date.now()}`, leadId: selectedLead.id, type: "Walk-in Scheduled" as const, description: `Walk-in scheduled for ${outcomeForm.walkInDate}`, timestamp: new Date().toISOString(), performedBy: currentUser.id }] }
           : l
       );
       store.saveLeads(updatedLeads);
