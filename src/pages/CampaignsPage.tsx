@@ -2,9 +2,11 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { store } from "@/lib/mock-data";
 import {
   Campaign, CampaignPlatform, CampaignObjective, CampaignApprovalStatus,
-  AudienceType, RetargetingSource, AdType, AdSet, AdCreative, LandingPage, UTMTracking,
+  AudienceType, RetargetingSource, AdType, AdSet, AdCreative, LandingPage, UTMTracking, Lead,
 } from "@/lib/types";
 import { MASTER_LOCATIONS, MASTER_COURSE_NAMES } from "@/lib/master-schema";
+import { useAuth } from "@/lib/auth-context";
+import { MarketingLeadForm } from "@/components/MarketingLeadForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { StatCard } from "@/components/StatCard";
 import {
   Plus, Megaphone, Target, TrendingUp, BarChart3, PieChart, DollarSign,
-  AlertCircle, CheckCircle2, Users, ArrowDownRight, ArrowUpRight, Eye, Layers,
+  AlertCircle, CheckCircle2, Users, ArrowDownRight, ArrowUpRight, Eye, Layers, UserPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PieChart as RPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid, Legend } from "recharts";
@@ -181,7 +183,11 @@ function CampaignForm({ onSave, onCancel }: { onSave: (c: Campaign) => void; onC
         </div>
       </div>
 
-      <Button onClick={handleSubmit} className="w-full">Create Campaign</Button>
+      <div className="flex items-center justify-end gap-2 border-t pt-4">
+        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button variant="outline" size="sm" onClick={() => { toast.info("Campaign saved as draft."); onCancel(); }}>Save Draft</Button>
+        <Button size="sm" onClick={handleSubmit}>Submit Campaign</Button>
+      </div>
     </div>
   );
 }
@@ -272,9 +278,11 @@ function AdSetForm({ campaignId, onSave }: { campaignId: string; onSave: (adSet:
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>(store.getCampaigns());
   const [createOpen, setCreateOpen] = useState(false);
+  const [leadFormOpen, setLeadFormOpen] = useState(false);
   const [adSetDialog, setAdSetDialog] = useState<string | null>(null);
   const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null);
   const [view, setView] = useState<"dashboard" | "list">("dashboard");
+  const { currentUser } = useAuth();
 
   const leads = store.getLeads();
   const admissions = store.getAdmissions();
@@ -331,6 +339,13 @@ export default function CampaignsPage() {
     toast.success("Ad Set added successfully.");
   };
 
+  const handleCreateLead = (lead: Lead) => {
+    const existing = store.getLeads();
+    const updated = [...existing, lead];
+    store.saveLeads(updated);
+    setLeadFormOpen(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -346,6 +361,15 @@ export default function CampaignsPage() {
           <Button variant={view === "list" ? "default" : "outline"} size="sm" onClick={() => setView("list")}>
             <Layers className="mr-1 h-4 w-4" />Campaigns
           </Button>
+          <Dialog open={leadFormOpen} onOpenChange={setLeadFormOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Add Lead</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader><DialogTitle>Quick Lead Capture</DialogTitle></DialogHeader>
+              <MarketingLeadForm onSave={handleCreateLead} onCancel={() => setLeadFormOpen(false)} creatorName={currentUser?.name || "Marketing"} />
+            </DialogContent>
+          </Dialog>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
               <Button><Plus className="mr-2 h-4 w-4" />New Campaign</Button>
