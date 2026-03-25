@@ -600,17 +600,17 @@ function OwnerDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Director Command Center</h1>
-          <p className="text-sm text-muted-foreground">Enterprise analytics & business intelligence</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Director Command Center</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Enterprise analytics & business intelligence</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {["overview", "revenue", "pipeline", "team", "marketing"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveSection(tab)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-colors ${activeSection === tab ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
+              className={`rounded-lg px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-medium capitalize transition-colors ${activeSection === tab ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}
             >
               {tab}
             </button>
@@ -633,7 +633,7 @@ function OwnerDashboard() {
       )}
 
       {/* ─── Section 1: KPI Ribbon (always visible) ─── */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
         <StatCard title="Total Revenue" value={`₹${totalRevenue.toLocaleString()}`} icon={<DollarSign className="h-5 w-5" />} />
         <StatCard title="Admissions" value={admissions.length} icon={<GraduationCap className="h-5 w-5" />} />
         <StatCard title="Active Leads" value={activeLeads.length} icon={<Users className="h-5 w-5" />} />

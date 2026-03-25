@@ -262,7 +262,7 @@ export default function RevenueAnalyticsPage() {
       {editingTargets && (
         <div className="rounded-xl bg-card p-5 shadow-card border-2 border-primary/20 animate-in slide-in-from-top-2">
           <h3 className="text-sm font-semibold text-card-foreground mb-3">Revenue Targets</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <Label className="text-xs">Monthly Revenue Target (₹)</Label>
               <Input type="number" value={tempTargets.monthlyTarget} onChange={(e) => setTempTargets({ ...tempTargets, monthlyTarget: +e.target.value })} className="h-8 text-sm" />
@@ -335,13 +335,13 @@ export default function RevenueAnalyticsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-muted">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="courses">Course Priority</TabsTrigger>
-          <TabsTrigger value="pipeline">Pipeline Forecast</TabsTrigger>
-          <TabsTrigger value="team">Team Performance</TabsTrigger>
-          <TabsTrigger value="marketing">Marketing ROI</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
+        <TabsList className="bg-muted w-full overflow-x-auto flex-nowrap justify-start">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+          <TabsTrigger value="courses" className="text-xs sm:text-sm">Courses</TabsTrigger>
+          <TabsTrigger value="pipeline" className="text-xs sm:text-sm">Pipeline</TabsTrigger>
+          <TabsTrigger value="team" className="text-xs sm:text-sm">Team</TabsTrigger>
+          <TabsTrigger value="marketing" className="text-xs sm:text-sm">Marketing</TabsTrigger>
+          <TabsTrigger value="insights" className="text-xs sm:text-sm">Insights</TabsTrigger>
         </TabsList>
 
         {/* ═══ OVERVIEW ═══ */}

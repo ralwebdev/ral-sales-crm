@@ -379,10 +379,10 @@ export default function AdmissionsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Admissions</h1>
-          <p className="text-sm text-muted-foreground">Convert qualified leads into student records</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Admissions</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Convert qualified leads into student records</p>
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
@@ -451,7 +451,7 @@ export default function AdmissionsPage() {
       </div>
 
       {/* Main content: Table + Suggestion Card */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr_320px]">
         {/* Admissions Table */}
         <div className="overflow-x-auto rounded-xl bg-card shadow-card">
           <table className="w-full text-sm">

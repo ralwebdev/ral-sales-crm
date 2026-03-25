@@ -105,7 +105,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <button className="rounded-md p-1.5 text-muted-foreground hover:bg-muted lg:hidden" onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5" />
           </button>
-          <h2 className="text-lg font-semibold text-foreground">CRM Dashboard</h2>
+          <h2 className="text-sm sm:text-lg font-semibold text-foreground truncate">CRM Dashboard</h2>
           <Badge variant="outline" className="ml-auto text-[10px]">{roleLabels[currentUser.role]}</Badge>
         </header>
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
