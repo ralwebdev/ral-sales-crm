@@ -455,10 +455,10 @@ export default function CampaignsPage() {
           </div>
 
           {/* Landing Page Comparison */}
-          {campaigns.some((c) => c.landingPages.length > 1) && (
+          {campaigns.some((c) => (c.landingPages?.length ?? 0) > 1) && (
             <div className="rounded-xl bg-card shadow-card p-5">
               <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2"><Eye className="h-4 w-4 text-primary" />Landing Page Comparison</h3>
-              {campaigns.filter((c) => c.landingPages.length > 1).map((c) => (
+              {campaigns.filter((c) => (c.landingPages?.length ?? 0) > 1).map((c) => (
                 <div key={c.id} className="mb-4">
                   <p className="text-xs font-medium text-muted-foreground mb-2">{c.name}</p>
                   <div className="grid gap-2 sm:grid-cols-3">
@@ -576,7 +576,7 @@ export default function CampaignsPage() {
                 )}
 
                 {/* Landing Pages */}
-                {detailCampaign.landingPages.length > 0 && (
+                {(detailCampaign.landingPages?.length ?? 0) > 0 && (
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Landing Pages</p>
                     <div className="grid gap-2 sm:grid-cols-2">
