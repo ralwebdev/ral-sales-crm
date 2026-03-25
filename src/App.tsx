@@ -3,16 +3,40 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { AppLayout } from "@/components/AppLayout";
-import Dashboard from "@/pages/Dashboard";
+import RoleDashboard from "@/pages/RoleDashboard";
 import CampaignsPage from "@/pages/CampaignsPage";
 import LeadsPage from "@/pages/LeadsPage";
 import TelecallingPage from "@/pages/TelecallingPage";
 import FollowUpsPage from "@/pages/FollowUpsPage";
 import AdmissionsPage from "@/pages/AdmissionsPage";
+import LoginPage from "@/pages/LoginPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
+
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  return (
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<RoleDashboard />} />
+        <Route path="/campaigns" element={<CampaignsPage />} />
+        <Route path="/leads" element={<LeadsPage />} />
+        <Route path="/telecalling" element={<TelecallingPage />} />
+        <Route path="/follow-ups" element={<FollowUpsPage />} />
+        <Route path="/admissions" element={<AdmissionsPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AppLayout>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -20,17 +44,9 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/campaigns" element={<CampaignsPage />} />
-            <Route path="/leads" element={<LeadsPage />} />
-            <Route path="/telecalling" element={<TelecallingPage />} />
-            <Route path="/follow-ups" element={<FollowUpsPage />} />
-            <Route path="/admissions" element={<AdmissionsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
