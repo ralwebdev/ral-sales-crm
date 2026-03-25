@@ -745,7 +745,7 @@ export default function LeadsPage() {
 
       {/* ─── PIPELINE VIEW ─── */}
       {view === "pipeline" && (
-        <PipelineBoard leads={leads} onSelect={setSelectedLead} />
+        <KanbanBoard leads={leads} onLeadSelect={setSelectedLead} onLeadStatusChange={handleKanbanStatusChange} />
       )}
 
       {/* ─── TABLE VIEW ─── */}
