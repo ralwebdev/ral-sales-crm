@@ -283,7 +283,7 @@ export interface PaymentHistoryEntry {
   paymentMode: PaymentMode;
   referenceNumber: string;
   paymentType: PaymentType | "";
-  emiNumber: number | null;
+  emiNumber?: number | null;
 }
 
 export interface Admission {
@@ -301,13 +301,13 @@ export interface Admission {
   chequeNumber: string;
   transactionId: string;
   paymentType: PaymentType | "";
-  emiNumber: number | null;
-  totalEmis: number | null;
-  paymentHistory: PaymentHistoryEntry[];
-  parentName: string;
-  parentPhone: string;
-  studentBankName: string;
-  parentBankName: string;
+  emiNumber?: number | null;
+  totalEmis?: number | null;
+  paymentHistory?: PaymentHistoryEntry[];
+  parentName?: string;
+  parentPhone?: string;
+  studentBankName?: string;
+  parentBankName?: string;
   createdAt: string;
   scholarshipApplied?: boolean;
   scholarshipPercentage?: number;
