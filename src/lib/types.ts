@@ -20,7 +20,7 @@ export type LeadIntentCategory = "High Intent" | "Medium Intent" | "Low Intent";
 export type DecisionMaker = "Self" | "Parent" | "Joint";
 export type FeePayer = "Self" | "Parent" | "Sponsor";
 export type CommunicationChannel = "Phone Call" | "WhatsApp" | "Email" | "SMS" | "Instagram DM" | "Website Chat";
-export type LostReason = "Too Expensive" | "Not Interested" | "Joined Competitor" | "No Response" | "Wrong Number";
+export type LostReason = "Too Expensive" | "Not Interested" | "Joined Competitor" | "No Response" | "Wrong Number" | "Budget Issue";
 export type TransferReason = "Language mismatch" | "Course specialization" | "Counselor unavailable";
 export type LeadSourceFormType = "Apply Now" | "Free Counselling" | "Free Callback" | "Register Now" | "Download Brochure" | "Walk-in" | "Referral";
 export type CurrentStatus = "Student" | "Working Professional" | "Fresher" | "Business Owner" | "Career Switch" | "Unemployed";
@@ -274,7 +274,7 @@ export interface FollowUp {
 }
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid";
-export type PaymentType = "Admission Fee" | "Seat Booking" | "Registration" | "EMI";
+export type PaymentType = "Admission Fee" | "Seat Booking" | "Registration" | "EMI" | "Full Payment";
 
 export interface PaymentHistoryEntry {
   id: string;
