@@ -95,6 +95,7 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
     { to: "/", label: "Dashboard" },
     { to: "/campaigns", label: "Campaigns" },
     { to: "/leads", label: "Leads" },
+    { to: "/revenue", label: "Revenue" },
   ],
   telecalling_manager: [
     { to: "/", label: "Dashboard" },
