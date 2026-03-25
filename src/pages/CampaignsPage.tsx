@@ -4,6 +4,7 @@ import {
   Campaign, CampaignPlatform, CampaignObjective, CampaignApprovalStatus,
   AudienceType, RetargetingSource, AdType, AdSet, AdCreative, LandingPage, UTMTracking,
 } from "@/lib/types";
+import { MASTER_LOCATIONS, MASTER_COURSE_NAMES } from "@/lib/master-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -136,7 +137,13 @@ function CampaignForm({ onSave, onCancel }: { onSave: (c: Campaign) => void; onC
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Interest Category</Label><Input value={form.interestCategory} onChange={(e) => set("interestCategory", e.target.value)} placeholder="e.g. Technology" /></div>
-            <div><Label>Target City</Label><Input value={form.targetCity} onChange={(e) => set("targetCity", e.target.value)} placeholder="e.g. Mumbai" /></div>
+            <div>
+              <Label>Target City</Label>
+              <Select value={form.targetCity} onValueChange={(v) => set("targetCity", v)}>
+                <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
+                <SelectContent>{MASTER_LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       )}

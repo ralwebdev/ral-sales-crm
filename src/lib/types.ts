@@ -23,10 +23,15 @@ export type CommunicationChannel = "Phone Call" | "WhatsApp" | "Email" | "SMS" |
 export type LostReason = "Too Expensive" | "Not Interested" | "Joined Competitor" | "No Response" | "Wrong Number";
 export type TransferReason = "Language mismatch" | "Course specialization" | "Counselor unavailable";
 export type LeadSourceFormType = "Apply Now" | "Free Counselling" | "Free Callback" | "Register Now" | "Download Brochure" | "Walk-in" | "Referral";
-export type CurrentStatus = "Student" | "Working Professional" | "Fresher" | "Career Switch";
-export type CareerGoal = "Designer" | "Developer" | "Digital Marketer" | "Animator" | "Data Analyst" | "Other";
-export type LeadMotivation = "Job Placement" | "Career Switch" | "Skill Upgrade" | "Portfolio Building";
+export type CurrentStatus = "Student" | "Working Professional" | "Fresher" | "Business Owner" | "Career Switch" | "Unemployed";
+export type CareerGoal = "Graphic Designer" | "UI/UX Designer" | "Web Developer" | "Full Stack Developer" | "Digital Marketer" | "Animator" | "Video Editor" | "Freelancer" | "Entrepreneur" | "Content Creator";
+export type LeadMotivation = "Job Placement" | "Career Switch" | "Skill Upgrade" | "Portfolio Building" | "Freelancing" | "Business Purpose";
 export type PreferredStartTime = "Immediate" | "Within 1 Month" | "Within 3 Months" | "Not Sure";
+export type CallOutcomeType = "Connected" | "Not Answered" | "Call Later" | "Interested" | "Not Interested" | "Wrong Number" | "Switched Off" | "Invalid Number";
+export type ObjectionType = "Course Too Expensive" | "Timing Issue" | "Location Issue" | "Not Sure About Career" | "Need Parent Approval" | "Already Joined Another Institute" | "Just Researching" | "Need More Time";
+export type FollowUpTypeSchema = "Phone Call" | "WhatsApp" | "Email" | "Counseling Meeting" | "Campus Visit" | "Demo Class" | "Zoom Meeting";
+export type PaymentModeSchema = "Cash" | "Cheque" | "Online Transfer" | "UPI" | "Credit Card" | "Debit Card" | "Net Banking";
+export type AdmissionProbabilityType = "Very High" | "High" | "Medium" | "Low" | "Very Low";
 
 export interface Course {
   id: string;
@@ -202,7 +207,7 @@ export interface Lead {
   // Counseling
   scholarshipDiscussion?: string;
   emiOption?: boolean;
-  admissionProbability?: "High" | "Medium" | "Low";
+  admissionProbability?: AdmissionProbabilityType;
   scholarshipApplied?: boolean;
   scholarshipPercentage?: number;
   loanRequired?: boolean;
@@ -217,9 +222,16 @@ export interface Lead {
   priorityCategory?: "High Priority" | "Medium Priority" | "Low Priority";
 }
 
-export type CallOutcome = "Connected" | "Not answered" | "Interested" | "Not interested" | "Call later" | "Wrong Number";
-export type NotInterestedReason = "Too Expensive" | "Course Not Relevant" | "Joined Competitor" | "No Time";
-export type FollowUpType = "Call" | "WhatsApp" | "Email" | "Counseling Meeting";
+export type CallOutcome = "Connected" | "Not Answered" | "Interested" | "Not Interested" | "Call Later" | "Wrong Number" | "Switched Off" | "Invalid Number" |
+  // Legacy compat
+  "Not answered" | "Not interested" | "Call later";
+export type NotInterestedReason = "Course Too Expensive" | "Timing Issue" | "Location Issue" | "Not Sure About Career" | "Need Parent Approval" | "Already Joined Another Institute" | "Just Researching" | "Need More Time" |
+  // Legacy compat
+  "Too Expensive" | "Course Not Relevant" | "Joined Competitor" | "No Time";
+export type FollowUpType = "Phone Call" | "WhatsApp" | "Email" | "Counseling Meeting" | "Campus Visit" | "Demo Class" | "Zoom Meeting" |
+  // Legacy compat
+  "Call";
+export type PaymentMode = PaymentModeSchema;
 
 export interface ConversationInsight {
   careerGoal?: string;
@@ -262,7 +274,6 @@ export interface FollowUp {
 }
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid";
-export type PaymentMode = "Cash" | "Cheque" | "Online Transfer";
 export type PaymentType = "Admission Fee" | "Seat Booking" | "Registration" | "EMI";
 
 export interface PaymentHistoryEntry {

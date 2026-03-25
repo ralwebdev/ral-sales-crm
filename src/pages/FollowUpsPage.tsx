@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { store } from "@/lib/mock-data";
-import { FollowUp } from "@/lib/types";
+import { FollowUp, FollowUpType } from "@/lib/types";
+import { MASTER_FOLLOWUP_TYPES } from "@/lib/master-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +17,7 @@ export default function FollowUpsPage() {
   const leads = store.getLeads();
   const users = store.getUsers();
 
-  const [form, setForm] = useState({ leadId: "", assignedTo: "", date: "", notes: "" });
+  const [form, setForm] = useState({ leadId: "", assignedTo: "", date: "", time: "", notes: "", followUpType: "" as FollowUpType | "" });
 
   const handleCreate = () => {
     const newFU: FollowUp = {
@@ -27,11 +28,13 @@ export default function FollowUpsPage() {
       notes: form.notes,
       completed: false,
       createdAt: new Date().toISOString().split("T")[0],
+      followUpType: (form.followUpType as FollowUpType) || undefined,
+      followUpTime: form.time || undefined,
     };
     const updated = [...followUps, newFU];
     setFollowUps(updated);
     store.saveFollowUps(updated);
-    setForm({ leadId: "", assignedTo: "", date: "", notes: "" });
+    setForm({ leadId: "", assignedTo: "", date: "", time: "", notes: "", followUpType: "" });
     setOpen(false);
   };
 
@@ -63,7 +66,8 @@ export default function FollowUpsPage() {
                 <p className="text-sm font-medium text-card-foreground">{lead?.name || "Unknown Lead"}</p>
                 <p className="text-xs text-muted-foreground">{f.notes}</p>
                 <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><CalendarClock className="h-3 w-3" />{f.date}</span>
+                  <span className="flex items-center gap-1"><CalendarClock className="h-3 w-3" />{f.date}{f.followUpTime ? ` at ${f.followUpTime}` : ""}</span>
+                  {f.followUpType && <span className="rounded-full bg-accent px-2 py-0.5 text-[10px]">{f.followUpType}</span>}
                   {user && <span>→ {user.name}</span>}
                 </div>
               </div>
@@ -102,7 +106,17 @@ export default function FollowUpsPage() {
                   <SelectContent>{users.map((u) => <SelectItem key={u.id} value={u.id}>{u.name} ({u.role})</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
+                <div><Label>Time</Label><Input type="time" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} /></div>
+              </div>
+              <div>
+                <Label>Follow-up Type</Label>
+                <Select value={form.followUpType} onValueChange={(v) => setForm({ ...form, followUpType: v as FollowUpType })}>
+                  <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                  <SelectContent>{MASTER_FOLLOWUP_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
               <div><Label>Notes</Label><Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} /></div>
               <Button onClick={handleCreate} className="w-full" disabled={!form.leadId || !form.date}>Schedule</Button>
             </div>

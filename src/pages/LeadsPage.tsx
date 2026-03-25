@@ -3,8 +3,13 @@ import { store } from "@/lib/mock-data";
 import {
   Lead, LeadStatus, LeadQuality, LeadTemperature, LeadIntentCategory,
   DecisionMaker, FeePayer, LostReason, TransferReason, CommunicationChannel,
-  LeadActivity, QualificationChecklist,
+  LeadActivity, QualificationChecklist, CurrentStatus, CareerGoal, LeadMotivation, PreferredStartTime,
 } from "@/lib/types";
+import {
+  MASTER_LEAD_SOURCES, MASTER_QUALIFICATIONS, MASTER_CURRENT_STATUS,
+  MASTER_CAREER_GOALS, MASTER_LEAD_MOTIVATIONS, MASTER_COURSE_NAMES,
+  MASTER_SALARY_EXPECTATIONS, MASTER_LOCATIONS, MASTER_LEAD_PIPELINE_STAGES,
+} from "@/lib/master-schema";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StatCard } from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
@@ -22,7 +27,7 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
-const STATUSES: LeadStatus[] = ["New", "Contacted", "Follow-up", "Counseling", "Qualified", "Admission", "Lost"];
+const STATUSES: LeadStatus[] = ["New", "Contact Attempted", "Connected", "Interested", "Application Submitted", "Interview Scheduled", "Interview Completed", "Counseling", "Qualified", "Admission", "Lost"];
 const LOST_REASONS: LostReason[] = ["Too Expensive", "Not Interested", "Joined Competitor", "No Response", "Wrong Number"];
 const TRANSFER_REASONS: TransferReason[] = ["Language mismatch", "Course specialization", "Counselor unavailable"];
 const CHANNELS: CommunicationChannel[] = ["Phone Call", "WhatsApp", "Email", "SMS", "Instagram DM", "Website Chat"];
@@ -387,6 +392,9 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
     name: "", phone: "", email: "", source: "", campaignId: "", interestedCourse: "", assignedTelecallerId: "",
     currentEducation: "", graduationYear: "", currentOccupation: "", collegeInstitution: "",
     feePayer: "" as FeePayer | "", decisionMaker: "" as DecisionMaker | "", budgetRange: "",
+    highestQualification: "", currentStatus: "" as CurrentStatus | "", careerGoal: "" as CareerGoal | "",
+    leadMotivation: "" as LeadMotivation | "", preferredStartTime: "" as PreferredStartTime | "",
+    expectedSalary: "", jobLocationPreference: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -394,6 +402,9 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Name is required.";
     if (!form.phone.trim()) e.phone = "Phone number is required.";
+    else if (!/^\d{10}$/.test(form.phone.trim())) e.phone = "Please enter a valid 10-digit phone number.";
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Please enter a valid email address.";
+    if (!form.interestedCourse) e.interestedCourse = "Please select a course of interest.";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -422,6 +433,13 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
       currentEducation: form.currentEducation, graduationYear: form.graduationYear,
       currentOccupation: form.currentOccupation, collegeInstitution: form.collegeInstitution,
       feePayer: form.feePayer as FeePayer || undefined, decisionMaker: form.decisionMaker as DecisionMaker || undefined,
+      highestQualification: form.highestQualification || undefined,
+      currentStatus: form.currentStatus as CurrentStatus || undefined,
+      careerGoal: form.careerGoal as CareerGoal || undefined,
+      leadMotivation: form.leadMotivation as LeadMotivation || undefined,
+      preferredStartTime: form.preferredStartTime as PreferredStartTime || undefined,
+      expectedSalary: form.expectedSalary || undefined,
+      jobLocationPreference: form.jobLocationPreference || undefined,
       intentScore: 30, intentCategory: "Low Intent", temperature: "Cold",
       priorityScore: 30, priorityCategory: "Low Priority",
       activities: [{ id: `act${Date.now()}`, leadId: `l${Date.now()}`, type: "Lead Created", description: `New lead: ${form.name}`, timestamp: new Date().toISOString() }],
@@ -433,12 +451,18 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
   return (
     <div className="space-y-3 pt-2 max-h-[75vh] overflow-y-auto pr-1">
       <div className="grid grid-cols-2 gap-3">
-        <div><Label>Name</Label><Input value={form.name} onChange={(e) => set("name", e.target.value)} /><FieldError msg={errors.name} /></div>
-        <div><Label>Phone</Label><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} /><FieldError msg={errors.phone} /></div>
+        <div><Label>Name <span className="text-destructive">*</span></Label><Input value={form.name} onChange={(e) => set("name", e.target.value)} /><FieldError msg={errors.name} /></div>
+        <div><Label>Phone <span className="text-destructive">*</span></Label><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="10-digit number" /><FieldError msg={errors.phone} /></div>
       </div>
-      <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
+      <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /><FieldError msg={errors.email} /></div>
       <div className="grid grid-cols-2 gap-3">
-        <div><Label>Source</Label><Input value={form.source} onChange={(e) => set("source", e.target.value)} placeholder="e.g. Meta Ad" /></div>
+        <div>
+          <Label>Lead Source</Label>
+          <Select value={form.source} onValueChange={(v) => set("source", v)}>
+            <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
+            <SelectContent>{MASTER_LEAD_SOURCES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
         <div>
           <Label>Campaign</Label>
           <Select value={form.campaignId} onValueChange={(v) => set("campaignId", v)}>
@@ -447,7 +471,14 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
           </Select>
         </div>
       </div>
-      <div><Label>Interested Course</Label><Input value={form.interestedCourse} onChange={(e) => set("interestedCourse", e.target.value)} /></div>
+      <div>
+        <Label>Interested Course <span className="text-destructive">*</span></Label>
+        <Select value={form.interestedCourse} onValueChange={(v) => set("interestedCourse", v)}>
+          <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
+          <SelectContent>{MASTER_COURSE_NAMES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+        </Select>
+        <FieldError msg={errors.interestedCourse} />
+      </div>
       <div>
         <Label>Assign Telecaller</Label>
         <Select value={form.assignedTelecallerId} onValueChange={(v) => set("assignedTelecallerId", v)}>
@@ -460,6 +491,38 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
       {form.interestedCourse && (
         <div className="animate-slide-down space-y-3 rounded-lg border border-border p-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Student Profile</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Highest Qualification</Label>
+              <Select value={form.highestQualification} onValueChange={(v) => set("highestQualification", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{MASTER_QUALIFICATIONS.map((q) => <SelectItem key={q} value={q}>{q}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Current Status</Label>
+              <Select value={form.currentStatus} onValueChange={(v) => set("currentStatus", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{MASTER_CURRENT_STATUS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Career Goal</Label>
+              <Select value={form.careerGoal} onValueChange={(v) => set("careerGoal", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{MASTER_CAREER_GOALS.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Lead Motivation</Label>
+              <Select value={form.leadMotivation} onValueChange={(v) => set("leadMotivation", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{MASTER_LEAD_MOTIVATIONS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Current Education</Label><Input value={form.currentEducation} onChange={(e) => set("currentEducation", e.target.value)} placeholder="e.g. B.Com" /></div>
             <div><Label>Graduation Year</Label><Input value={form.graduationYear} onChange={(e) => set("graduationYear", e.target.value)} placeholder="e.g. 2024" /></div>
@@ -485,7 +548,32 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
               <p className="text-[10px] text-muted-foreground mt-1">Understanding the decision maker helps counselors tailor discussions.</p>
             </div>
           </div>
-          <div><Label>Budget Range</Label><Input value={form.budgetRange} onChange={(e) => set("budgetRange", e.target.value)} placeholder="e.g. ₹30k-50k" /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Preferred Start Time</Label>
+              <Select value={form.preferredStartTime} onValueChange={(v) => set("preferredStartTime", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{(["Immediate", "Within 1 Month", "Within 3 Months", "Not Sure"] as const).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div><Label>Budget Range</Label><Input value={form.budgetRange} onChange={(e) => set("budgetRange", e.target.value)} placeholder="e.g. ₹30k-50k" /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Expected Salary</Label>
+              <Select value={form.expectedSalary} onValueChange={(v) => set("expectedSalary", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{MASTER_SALARY_EXPECTATIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Preferred Location</Label>
+              <Select value={form.jobLocationPreference} onValueChange={(v) => set("jobLocationPreference", v)}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>{MASTER_LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       )}
 
@@ -498,8 +586,12 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
 function PipelineBoard({ leads, onSelect }: { leads: Lead[]; onSelect: (l: Lead) => void }) {
   const stages: { status: LeadStatus; color: string }[] = [
     { status: "New", color: "border-info" },
-    { status: "Contacted", color: "border-primary" },
-    { status: "Follow-up", color: "border-warning" },
+    { status: "Contact Attempted", color: "border-muted-foreground" },
+    { status: "Connected", color: "border-primary" },
+    { status: "Interested", color: "border-warning" },
+    { status: "Application Submitted", color: "border-primary" },
+    { status: "Interview Scheduled", color: "border-primary" },
+    { status: "Interview Completed", color: "border-primary" },
     { status: "Counseling", color: "border-primary" },
     { status: "Qualified", color: "border-success" },
     { status: "Admission", color: "border-success" },

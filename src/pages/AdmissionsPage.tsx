@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { store } from "@/lib/mock-data";
 import { Admission, PaymentStatus, PaymentMode, PaymentType, PaymentHistoryEntry } from "@/lib/types";
+import {
+  MASTER_PAYMENT_MODES, MASTER_COURSE_NAMES, MASTER_BATCH_TIMINGS,
+  MASTER_SCHOLARSHIP_LEVELS,
+} from "@/lib/master-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +14,7 @@ import { StatCard } from "@/components/StatCard";
 import { GraduationCap, IndianRupee, UserCheck, Plus, CreditCard, AlertCircle, CheckCircle2, User, Phone, Building2, CalendarClock } from "lucide-react";
 import { toast } from "sonner";
 
-const PAYMENT_MODES: PaymentMode[] = ["Cash", "Cheque", "Online Transfer"];
+const PAYMENT_MODES: PaymentMode[] = [...MASTER_PAYMENT_MODES] as PaymentMode[];
 const PAYMENT_TYPES: PaymentType[] = ["Admission Fee", "Seat Booking", "Registration", "EMI"];
 
 function getReferenceDisplay(mode: PaymentMode | "", chequeNumber: string, transactionId: string) {
@@ -395,8 +399,20 @@ export default function AdmissionsPage() {
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Course</Label><Input value={form.courseSelected} onChange={(e) => setForm({ ...form, courseSelected: e.target.value })} /></div>
-                <div><Label>Batch</Label><Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} placeholder="e.g. DS-2026-B" /></div>
+                <div>
+                  <Label>Course</Label>
+                  <Select value={form.courseSelected} onValueChange={(v) => setForm({ ...form, courseSelected: v })}>
+                    <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
+                    <SelectContent>{MASTER_COURSE_NAMES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Batch Timing</Label>
+                  <Select value={form.batch} onValueChange={(v) => setForm({ ...form, batch: v })}>
+                    <SelectTrigger><SelectValue placeholder="Select batch" /></SelectTrigger>
+                    <SelectContent>{MASTER_BATCH_TIMINGS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Admission Date</Label><Input type="date" value={form.admissionDate} onChange={(e) => setForm({ ...form, admissionDate: e.target.value })} /></div>
