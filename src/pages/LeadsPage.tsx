@@ -586,8 +586,12 @@ function LeadCreateForm({ onSave }: { onSave: (lead: Lead) => void }) {
 function PipelineBoard({ leads, onSelect }: { leads: Lead[]; onSelect: (l: Lead) => void }) {
   const stages: { status: LeadStatus; color: string }[] = [
     { status: "New", color: "border-info" },
-    { status: "Contacted", color: "border-primary" },
-    { status: "Follow-up", color: "border-warning" },
+    { status: "Contact Attempted", color: "border-muted-foreground" },
+    { status: "Connected", color: "border-primary" },
+    { status: "Interested", color: "border-warning" },
+    { status: "Application Submitted", color: "border-primary" },
+    { status: "Interview Scheduled", color: "border-primary" },
+    { status: "Interview Completed", color: "border-primary" },
     { status: "Counseling", color: "border-primary" },
     { status: "Qualified", color: "border-success" },
     { status: "Admission", color: "border-success" },
