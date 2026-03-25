@@ -357,6 +357,15 @@ export default function CampaignsPage() {
           <Button variant={view === "list" ? "default" : "outline"} size="sm" onClick={() => setView("list")}>
             <Layers className="mr-1 h-4 w-4" />Campaigns
           </Button>
+          <Dialog open={leadFormOpen} onOpenChange={setLeadFormOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Add Lead</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader><DialogTitle>Quick Lead Capture</DialogTitle></DialogHeader>
+              <MarketingLeadForm onSave={handleCreateLead} onCancel={() => setLeadFormOpen(false)} creatorName={currentUser?.name || "Marketing"} />
+            </DialogContent>
+          </Dialog>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
               <Button><Plus className="mr-2 h-4 w-4" />New Campaign</Button>
