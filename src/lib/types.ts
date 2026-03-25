@@ -20,7 +20,7 @@ export type LeadIntentCategory = "High Intent" | "Medium Intent" | "Low Intent";
 export type DecisionMaker = "Self" | "Parent" | "Joint";
 export type FeePayer = "Self" | "Parent" | "Sponsor";
 export type CommunicationChannel = "Phone Call" | "WhatsApp" | "Email" | "SMS" | "Instagram DM" | "Website Chat";
-export type LostReason = "Too Expensive" | "Not Interested" | "Joined Competitor" | "No Response" | "Wrong Number";
+export type LostReason = "Too Expensive" | "Not Interested" | "Joined Competitor" | "No Response" | "Wrong Number" | "Budget Issue";
 export type TransferReason = "Language mismatch" | "Course specialization" | "Counselor unavailable";
 export type LeadSourceFormType = "Apply Now" | "Free Counselling" | "Free Callback" | "Register Now" | "Download Brochure" | "Walk-in" | "Referral";
 export type CurrentStatus = "Student" | "Working Professional" | "Fresher" | "Business Owner" | "Career Switch" | "Unemployed";
@@ -156,16 +156,16 @@ export interface Lead {
   status: LeadStatus;
   createdAt: string;
   // Attribution
-  adSetName: string;
-  adName: string;
-  landingPageUrl: string;
-  utm: UTMTracking;
+  adSetName?: string;
+  adName?: string;
+  landingPageUrl?: string;
+  utm?: UTMTracking;
   // Quality
   leadScore: number;
   leadQuality: LeadQuality;
   budgetRange: string;
   urgencyLevel: string;
-  otherInstitutes: string;
+  otherInstitutes?: string;
   // Enrichment
   currentEducation?: string;
   graduationYear?: string;
@@ -274,7 +274,7 @@ export interface FollowUp {
 }
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid";
-export type PaymentType = "Admission Fee" | "Seat Booking" | "Registration" | "EMI";
+export type PaymentType = "Admission Fee" | "Seat Booking" | "Registration" | "EMI" | "Full Payment";
 
 export interface PaymentHistoryEntry {
   id: string;
@@ -283,7 +283,7 @@ export interface PaymentHistoryEntry {
   paymentMode: PaymentMode;
   referenceNumber: string;
   paymentType: PaymentType | "";
-  emiNumber: number | null;
+  emiNumber?: number | null;
 }
 
 export interface Admission {
@@ -301,13 +301,13 @@ export interface Admission {
   chequeNumber: string;
   transactionId: string;
   paymentType: PaymentType | "";
-  emiNumber: number | null;
-  totalEmis: number | null;
-  paymentHistory: PaymentHistoryEntry[];
-  parentName: string;
-  parentPhone: string;
-  studentBankName: string;
-  parentBankName: string;
+  emiNumber?: number | null;
+  totalEmis?: number | null;
+  paymentHistory?: PaymentHistoryEntry[];
+  parentName?: string;
+  parentPhone?: string;
+  studentBankName?: string;
+  parentBankName?: string;
   createdAt: string;
   scholarshipApplied?: boolean;
   scholarshipPercentage?: number;
