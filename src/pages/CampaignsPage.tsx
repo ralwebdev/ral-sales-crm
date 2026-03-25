@@ -183,7 +183,11 @@ function CampaignForm({ onSave, onCancel }: { onSave: (c: Campaign) => void; onC
         </div>
       </div>
 
-      <Button onClick={handleSubmit} className="w-full">Create Campaign</Button>
+      <div className="flex items-center justify-end gap-2 border-t pt-4">
+        <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button variant="outline" size="sm" onClick={() => { toast.info("Campaign saved as draft."); onCancel(); }}>Save Draft</Button>
+        <Button size="sm" onClick={handleSubmit}>Submit Campaign</Button>
+      </div>
     </div>
   );
 }
