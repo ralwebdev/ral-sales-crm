@@ -108,10 +108,13 @@ export default function TelecallingPage() {
     callbackDate: string;
     callbackTime: string;
     insight: ConversationInsight;
+    scheduleWalkIn: boolean;
+    walkInDate: string;
+    walkInTime: string;
   }>({
     outcome: "", notes: "", notInterestedReason: "", followUpDate: "", followUpTime: "",
     followUpType: "", callbackDate: "", callbackTime: "",
-    insight: {},
+    insight: {}, scheduleWalkIn: false, walkInDate: "", walkInTime: "",
   });
   const [outcomeError, setOutcomeError] = useState("");
 
@@ -255,7 +258,7 @@ export default function TelecallingPage() {
   const openWorkspace = (lead: Lead) => {
     setSelectedLead(lead);
     setShowOutcomeForm(false);
-    setOutcomeForm({ outcome: "", notes: "", notInterestedReason: "", followUpDate: "", followUpTime: "", followUpType: "", callbackDate: "", callbackTime: "", insight: {} });
+    setOutcomeForm({ outcome: "", notes: "", notInterestedReason: "", followUpDate: "", followUpTime: "", followUpType: "", callbackDate: "", callbackTime: "", insight: {}, scheduleWalkIn: false, walkInDate: "", walkInTime: "" });
     setOutcomeError("");
   };
 
@@ -289,6 +292,18 @@ export default function TelecallingPage() {
     setCallLogs(updated);
     store.saveCallLogs(updated);
 
+    // If walk-in scheduled, update lead
+    if (outcomeForm.scheduleWalkIn && outcomeForm.walkInDate) {
+      const allLeadsData = store.getLeads();
+      const updatedLeads = allLeadsData.map((l) =>
+        l.id === selectedLead.id
+          ? { ...l, walkInStatus: "Scheduled" as const, walkInDate: outcomeForm.walkInDate, walkInTime: outcomeForm.walkInTime, walkInCounselor: "u5", assignedCounselor: "u5",
+              activities: [...(l.activities || []), { id: `act${Date.now()}`, type: "Walk-in Scheduled" as const, description: `Walk-in scheduled for ${outcomeForm.walkInDate}`, timestamp: new Date().toISOString(), performedBy: currentUser.id }] }
+          : l
+      );
+      store.saveLeads(updatedLeads);
+    }
+
     // If follow-up scheduled, add to follow-ups
     if (outcomeForm.followUpDate) {
       const newFU = {
@@ -298,9 +313,9 @@ export default function TelecallingPage() {
       const updatedFU = [...followUps, newFU];
       setFollowUps(updatedFU);
       store.saveFollowUps(updatedFU);
-      showToast("Call outcome recorded. Follow-up added to your task queue.");
+      showToast(outcomeForm.scheduleWalkIn ? "Walk-in counseling scheduled successfully." : "Call outcome recorded. Follow-up added to your task queue.");
     } else {
-      showToast("Call outcome recorded successfully.");
+      showToast(outcomeForm.scheduleWalkIn ? "Walk-in counseling scheduled successfully." : "Call outcome recorded successfully.");
     }
 
     // Auto-load next lead
@@ -313,7 +328,7 @@ export default function TelecallingPage() {
       setSelectedLead(null);
     }
     setShowOutcomeForm(false);
-    setOutcomeForm({ outcome: "", notes: "", notInterestedReason: "", followUpDate: "", followUpTime: "", followUpType: "", callbackDate: "", callbackTime: "", insight: {} });
+    setOutcomeForm({ outcome: "", notes: "", notInterestedReason: "", followUpDate: "", followUpTime: "", followUpType: "", callbackDate: "", callbackTime: "", insight: {}, scheduleWalkIn: false, walkInDate: "", walkInTime: "" });
     setOutcomeError("");
   };
 
