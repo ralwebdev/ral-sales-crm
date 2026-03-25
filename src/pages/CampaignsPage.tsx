@@ -317,7 +317,7 @@ export default function CampaignsPage() {
   };
 
   const handleAddAdSet = (adSet: AdSet) => {
-    const updated = campaigns.map((c) => c.id === adSet.campaignId ? { ...c, adSets: [...c.adSets, adSet] } : c);
+    const updated = campaigns.map((c) => c.id === adSet.campaignId ? { ...c, adSets: [...(c.adSets || []), adSet] } : c);
     setCampaigns(updated);
     store.saveCampaigns(updated);
     setAdSetDialog(null);
@@ -557,7 +557,7 @@ export default function CampaignsPage() {
                 )}
 
                 {/* Ad Sets */}
-                {detailCampaign.adSets.length > 0 && (
+                {(detailCampaign.adSets?.length ?? 0) > 0 && (
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Ad Sets ({detailCampaign.adSets.length})</p>
                     {detailCampaign.adSets.map((as) => (
