@@ -460,6 +460,16 @@ function OwnerDashboard() {
   const activeLeads = leads.filter((l) => l.status !== "Admission" && l.status !== "Lost");
   const hotLeads = leads.filter((l) => l.temperature === "Hot" && l.status !== "Admission" && l.status !== "Lost");
 
+  // Walk-in metrics
+  const walkInsScheduled = leads.filter((l) => l.walkInStatus === "Scheduled" || l.walkInStatus === "Completed" || l.walkInStatus === "No Show");
+  const walkInsCompleted = leads.filter((l) => l.walkInStatus === "Completed");
+  const walkInsNoShow = leads.filter((l) => l.walkInStatus === "No Show");
+  const walkInAdmissions = admissions.filter((a) => {
+    const lead = leads.find((l) => l.id === a.leadId);
+    return lead?.walkInStatus === "Completed";
+  });
+  const walkInConvRate = walkInsCompleted.length > 0 ? ((walkInAdmissions.length / walkInsCompleted.length) * 100).toFixed(1) : "0";
+
   // Revenue by course
   const revByCourse = useMemo(() => {
     const m = new Map<string, number>();
