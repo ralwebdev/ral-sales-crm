@@ -1,4 +1,4 @@
-import { Campaign, Lead, CallLog, FollowUp, Admission, User, UTMTracking } from "./types";
+import { Campaign, Lead, CallLog, FollowUp, Admission, User, UTMTracking, LeadActivity } from "./types";
 
 const defaultUtm: UTMTracking = { utmSource: "", utmMedium: "", utmCampaign: "", utmContent: "", utmTerm: "" };
 
