@@ -1,4 +1,4 @@
-import { Campaign, Lead, CallLog, FollowUp, Admission, User } from "./types";
+import { Campaign, Lead, CallLog, FollowUp, Admission, User, PaymentHistoryEntry } from "./types";
 
 export const mockUsers: User[] = [
   { id: "u1", name: "Amit Sharma", email: "amit@redapple.com", role: "admin" },
@@ -41,7 +41,17 @@ export const mockFollowUps: FollowUp[] = [
 ];
 
 export const mockAdmissions: Admission[] = [
-  { id: "a1", leadId: "l6", studentName: "Ishita Chopra", phone: "9876543215", email: "ishita@email.com", courseSelected: "MBA", batch: "MBA-2026-A", admissionDate: "2026-03-20", totalFee: 250000, paymentStatus: "Partial", createdAt: "2026-03-20" },
+  {
+    id: "a1", leadId: "l6", studentName: "Ishita Chopra", phone: "9876543215", email: "ishita@email.com",
+    courseSelected: "MBA", batch: "MBA-2026-A", admissionDate: "2026-03-20", totalFee: 250000,
+    paymentStatus: "Partial", paymentMode: "Online Transfer", chequeNumber: "", transactionId: "TXN20260320001",
+    paymentType: "EMI", emiNumber: 1, totalEmis: 6,
+    paymentHistory: [
+      { id: "ph1", paymentDate: "2026-03-20", amountPaid: 50000, paymentMode: "Online Transfer", referenceNumber: "TXN20260320001", paymentType: "EMI", emiNumber: 1 },
+    ],
+    parentName: "Rajesh Chopra", parentPhone: "9876500001", studentBankName: "HDFC Bank", parentBankName: "SBI",
+    createdAt: "2026-03-20",
+  },
 ];
 
 // localStorage helpers

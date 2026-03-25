@@ -59,6 +59,18 @@ export interface FollowUp {
 }
 
 export type PaymentStatus = "Pending" | "Partial" | "Paid";
+export type PaymentMode = "Cash" | "Cheque" | "Online Transfer";
+export type PaymentType = "Admission Fee" | "Seat Booking" | "Registration" | "EMI";
+
+export interface PaymentHistoryEntry {
+  id: string;
+  paymentDate: string;
+  amountPaid: number;
+  paymentMode: PaymentMode;
+  referenceNumber: string;
+  paymentType: PaymentType | "";
+  emiNumber: number | null;
+}
 
 export interface Admission {
   id: string;
@@ -71,5 +83,16 @@ export interface Admission {
   admissionDate: string;
   totalFee: number;
   paymentStatus: PaymentStatus;
+  paymentMode: PaymentMode | "";
+  chequeNumber: string;
+  transactionId: string;
+  paymentType: PaymentType | "";
+  emiNumber: number | null;
+  totalEmis: number | null;
+  paymentHistory: PaymentHistoryEntry[];
+  parentName: string;
+  parentPhone: string;
+  studentBankName: string;
+  parentBankName: string;
   createdAt: string;
 }
