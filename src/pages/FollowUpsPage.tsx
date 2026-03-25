@@ -80,10 +80,10 @@ export default function FollowUpsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Follow-ups</h1>
-          <p className="text-sm text-muted-foreground">Track and manage lead follow-ups</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Follow-ups</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Track and manage lead follow-ups</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -124,7 +124,7 @@ export default function FollowUpsPage() {
         </Dialog>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <div className="rounded-xl bg-card p-5 shadow-card">
           {renderList(overdue, "Overdue", "No overdue follow-ups")}
         </div>

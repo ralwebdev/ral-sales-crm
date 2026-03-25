@@ -732,26 +732,26 @@ export default function LeadsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Leads</h1>
-          <p className="text-sm text-muted-foreground">{leads.length} total leads in pipeline</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Leads</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">{leads.length} total leads in pipeline</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant={view === "dashboard" ? "default" : "outline"} size="sm" onClick={() => setView("dashboard")}>
-            <BarChart3 className="mr-1 h-4 w-4" />Dashboard
+            <BarChart3 className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Dashboard</span>
           </Button>
           <Button variant={view === "pipeline" ? "default" : "outline"} size="sm" onClick={() => setView("pipeline")}>
-            <ArrowRight className="mr-1 h-4 w-4" />Pipeline
+            <ArrowRight className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Pipeline</span>
           </Button>
           <Button variant={view === "table" ? "default" : "outline"} size="sm" onClick={() => setView("table")}>
-            <Eye className="mr-1 h-4 w-4" />Table
+            <Eye className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Table</span>
           </Button>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
-              <Button><Plus className="mr-2 h-4 w-4" />Add Lead</Button>
+              <Button size="sm"><Plus className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Add Lead</span></Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Add New Lead</DialogTitle></DialogHeader>
               <LeadCreateForm onSave={handleCreateLead} />
             </DialogContent>

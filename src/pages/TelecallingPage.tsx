@@ -439,18 +439,18 @@ export default function TelecallingPage() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-         <TabsList className="bg-muted">
-          <TabsTrigger value="queue">Smart Queue</TabsTrigger>
-          <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
-          <TabsTrigger value="workspace">Workspace</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="history">Call History</TabsTrigger>
+         <TabsList className="bg-muted w-full overflow-x-auto flex-nowrap justify-start">
+          <TabsTrigger value="queue" className="text-xs sm:text-sm">Queue</TabsTrigger>
+          <TabsTrigger value="pipeline" className="text-xs sm:text-sm">Pipeline</TabsTrigger>
+          <TabsTrigger value="workspace" className="text-xs sm:text-sm">Workspace</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
+          <TabsTrigger value="performance" className="text-xs sm:text-sm">Performance</TabsTrigger>
+          <TabsTrigger value="history" className="text-xs sm:text-sm">History</TabsTrigger>
         </TabsList>
 
         {/* ═══════ TAB 1: SMART CALL QUEUE ═══════ */}
         <TabsContent value="queue" className="mt-4">
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
               {renderQueueSection("High Priority Leads", smartQueue.highPriority, <Target className="h-4 w-4 text-destructive" />, "No high priority leads")}
               {renderQueueSection("Follow-ups Due Today", smartQueue.followUpDue, <Calendar className="h-4 w-4 text-warning" />, "")}
@@ -511,7 +511,7 @@ export default function TelecallingPage() {
         {/* ═══════ TAB 2: CLICK-TO-CALL WORKSPACE ═══════ */}
         <TabsContent value="workspace" className="mt-4">
           {selectedLead ? (
-            <div className="grid gap-6 lg:grid-cols-5">
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-5">
               {/* Left: Lead details */}
               <div className="lg:col-span-2 space-y-4">
                 <div className="rounded-xl bg-card p-5 shadow-card space-y-4">

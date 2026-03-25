@@ -349,32 +349,32 @@ export default function CampaignsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Campaigns</h1>
-          <p className="text-sm text-muted-foreground">Track campaign performance, lead attribution, and ROI</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Campaigns</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Track campaign performance, lead attribution, and ROI</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant={view === "dashboard" ? "default" : "outline"} size="sm" onClick={() => setView("dashboard")}>
-            <BarChart3 className="mr-1 h-4 w-4" />Dashboard
+            <BarChart3 className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Dashboard</span>
           </Button>
           <Button variant={view === "list" ? "default" : "outline"} size="sm" onClick={() => setView("list")}>
-            <Layers className="mr-1 h-4 w-4" />Campaigns
+            <Layers className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Campaigns</span>
           </Button>
           <Dialog open={leadFormOpen} onOpenChange={setLeadFormOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Add Lead</Button>
+              <Button variant="outline" size="sm"><UserPlus className="mr-1 h-4 w-4" /><span className="hidden sm:inline">Add Lead</span></Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Quick Lead Capture</DialogTitle></DialogHeader>
               <MarketingLeadForm onSave={handleCreateLead} onCancel={() => setLeadFormOpen(false)} creatorName={currentUser?.name || "Marketing"} />
             </DialogContent>
           </Dialog>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
-              <Button><Plus className="mr-2 h-4 w-4" />New Campaign</Button>
+              <Button size="sm"><Plus className="mr-1 h-4 w-4" /><span className="hidden sm:inline">New Campaign</span></Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Campaign</DialogTitle></DialogHeader>
               <CampaignForm onSave={handleCreateCampaign} onCancel={() => setCreateOpen(false)} />
             </DialogContent>

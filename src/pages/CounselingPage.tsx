@@ -139,7 +139,7 @@ export default function CounselingPage() {
       </div>
 
       {/* KPI Ribbon */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
         <StatCard title="Walk-ins Today" value={walkInToday.length} icon={<Users className="h-5 w-5" />} />
         <StatCard title="Completed Today" value={completedToday.length} icon={<CheckCircle2 className="h-5 w-5" />} />
         <StatCard title="No Shows" value={walkInNoShow.length} icon={<AlertTriangle className="h-5 w-5" />} />
@@ -163,16 +163,16 @@ export default function CounselingPage() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-muted">
-          <TabsTrigger value="walkins">Walk-ins</TabsTrigger>
-          <TabsTrigger value="counseling">Counseling</TabsTrigger>
-          <TabsTrigger value="joining">Joining Tracker</TabsTrigger>
-          <TabsTrigger value="kpi">KPI Dashboard</TabsTrigger>
+        <TabsList className="bg-muted w-full overflow-x-auto flex-nowrap justify-start">
+          <TabsTrigger value="walkins" className="text-xs sm:text-sm">Walk-ins</TabsTrigger>
+          <TabsTrigger value="counseling" className="text-xs sm:text-sm">Counseling</TabsTrigger>
+          <TabsTrigger value="joining" className="text-xs sm:text-sm">Joining</TabsTrigger>
+          <TabsTrigger value="kpi" className="text-xs sm:text-sm">KPI</TabsTrigger>
         </TabsList>
 
         {/* ═══════ TAB 1: Walk-ins ═══════ */}
         <TabsContent value="walkins" className="mt-4">
-          <div className="grid gap-6 lg:grid-cols-5">
+          <div className="grid gap-6 lg:grid-cols-5 grid-cols-1">
             <div className="lg:col-span-3 space-y-4">
               {/* Scheduled walk-ins */}
               <div className="rounded-xl bg-card p-5 shadow-card">
@@ -267,7 +267,7 @@ export default function CounselingPage() {
 
         {/* ═══════ TAB 2: All Counseling leads ═══════ */}
         <TabsContent value="counseling" className="mt-4">
-          <div className="grid gap-6 lg:grid-cols-5">
+          <div className="grid gap-6 lg:grid-cols-5 grid-cols-1">
             <div className="lg:col-span-3 space-y-2">
               <div className="rounded-xl bg-card p-5 shadow-card">
                 <h3 className="mb-3 text-sm font-semibold text-card-foreground">Active Counseling Leads ({counselingLeads.length})</h3>

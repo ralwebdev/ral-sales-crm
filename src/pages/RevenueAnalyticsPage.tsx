@@ -248,12 +248,12 @@ export default function RevenueAnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Revenue & ROAS Engine</h1>
-          <p className="text-sm text-muted-foreground">Revenue optimization, cost control & strategic insights</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Revenue & ROAS Engine</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Revenue optimization, cost control & strategic insights</p>
         </div>
-        <Button size="sm" variant="outline" onClick={() => { setEditingTargets(!editingTargets); setTempTargets(targets); }} className="text-xs">
+        <Button size="sm" variant="outline" onClick={() => { setEditingTargets(!editingTargets); setTempTargets(targets); }} className="text-xs self-start sm:self-auto">
           <Settings className="mr-1 h-3.5 w-3.5" /> Targets
         </Button>
       </div>
@@ -262,7 +262,7 @@ export default function RevenueAnalyticsPage() {
       {editingTargets && (
         <div className="rounded-xl bg-card p-5 shadow-card border-2 border-primary/20 animate-in slide-in-from-top-2">
           <h3 className="text-sm font-semibold text-card-foreground mb-3">Revenue Targets</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <Label className="text-xs">Monthly Revenue Target (₹)</Label>
               <Input type="number" value={tempTargets.monthlyTarget} onChange={(e) => setTempTargets({ ...tempTargets, monthlyTarget: +e.target.value })} className="h-8 text-sm" />
@@ -296,7 +296,7 @@ export default function RevenueAnalyticsPage() {
       )}
 
       {/* KPI Ribbon */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
         <StatCard title="Revenue" value={`₹${(totalRevenue / 100000).toFixed(1)}L`} icon={<DollarSign className="h-5 w-5" />} trend={totalRevenue >= targets.monthlyTarget ? "Target met ✓" : undefined} />
         <StatCard title="Target" value={`₹${(targets.monthlyTarget / 100000).toFixed(0)}L`} icon={<Target className="h-5 w-5" />} />
         <StatCard title="Remaining" value={`₹${(revenueRemaining / 100000).toFixed(1)}L`} icon={<TrendingUp className="h-5 w-5" />} />
@@ -310,7 +310,7 @@ export default function RevenueAnalyticsPage() {
       {/* Admission target calculator */}
       <div className="rounded-xl bg-card p-5 shadow-card">
         <h3 className="text-sm font-semibold text-card-foreground mb-3 flex items-center gap-2"><Target className="h-4 w-4 text-primary" /> Admission Target Calculator</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="rounded-lg border p-3 text-center">
             <p className="text-xs text-muted-foreground">Monthly Target</p>
             <p className="text-xl font-bold text-card-foreground">₹{(targets.monthlyTarget / 100000).toFixed(0)}L</p>
@@ -335,13 +335,13 @@ export default function RevenueAnalyticsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-muted">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="courses">Course Priority</TabsTrigger>
-          <TabsTrigger value="pipeline">Pipeline Forecast</TabsTrigger>
-          <TabsTrigger value="team">Team Performance</TabsTrigger>
-          <TabsTrigger value="marketing">Marketing ROI</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
+        <TabsList className="bg-muted w-full overflow-x-auto flex-nowrap justify-start">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+          <TabsTrigger value="courses" className="text-xs sm:text-sm">Courses</TabsTrigger>
+          <TabsTrigger value="pipeline" className="text-xs sm:text-sm">Pipeline</TabsTrigger>
+          <TabsTrigger value="team" className="text-xs sm:text-sm">Team</TabsTrigger>
+          <TabsTrigger value="marketing" className="text-xs sm:text-sm">Marketing</TabsTrigger>
+          <TabsTrigger value="insights" className="text-xs sm:text-sm">Insights</TabsTrigger>
         </TabsList>
 
         {/* ═══ OVERVIEW ═══ */}

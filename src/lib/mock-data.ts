@@ -551,6 +551,50 @@ export const mockLeads: Lead[] = [
       { id: "a61", leadId: "l31", type: "Admission Completed", description: "Admission for Graphic Design", timestamp: "2026-03-08T10:00:00" },
     ],
   },
+  // ── Admissions from Referral, YouTube, Partner Institute sources ──
+  {
+    id: "l32", name: "Deepak Verma", phone: "9876543241", email: "deepak.v@email.com", source: "Referral", campaignId: "c1",
+    interestedCourse: "UI/UX Design", assignedTelecallerId: "u3", status: "Admission", createdAt: "2026-03-07",
+    leadScore: 88, leadQuality: "Hot", budgetRange: "₹90k", urgencyLevel: "High",
+    highestQualification: "BCA", currentStatus: "Fresher", careerGoal: "UI/UX Designer", preferredStartTime: "Immediate",
+    leadSourceFormType: "Free Callback", leadMotivation: "Job Placement",
+    intentScore: 86, intentCategory: "High Intent", temperature: "Hot", priorityScore: 88, priorityCategory: "High Priority",
+    assignedCounselor: "u5",
+    walkInStatus: "Completed", walkInDate: "2026-03-09", walkInTime: "11:30", walkInCounselor: "u5",
+    scholarshipApplied: true, scholarshipPercentage: 10,
+    activities: [
+      { id: "a62", leadId: "l32", type: "Lead Created", description: "Referral from current student", timestamp: "2026-03-07T09:00:00" },
+      { id: "a63", leadId: "l32", type: "Admission Completed", description: "Admission for UI/UX Design", timestamp: "2026-03-11T14:00:00" },
+    ],
+  },
+  {
+    id: "l33", name: "Manisha Rao", phone: "9876543242", email: "manisha.r@email.com", source: "YouTube", campaignId: "c2",
+    interestedCourse: "Digital Marketing", assignedTelecallerId: "u4", status: "Admission", createdAt: "2026-03-05",
+    leadScore: 80, leadQuality: "Hot", budgetRange: "₹90k", urgencyLevel: "High",
+    highestQualification: "B.Com", currentStatus: "Working Professional", careerGoal: "Digital Marketer", preferredStartTime: "Within 1 Month",
+    leadSourceFormType: "Free Counselling", leadMotivation: "Skill Upgrade",
+    intentScore: 82, intentCategory: "High Intent", temperature: "Hot", priorityScore: 80, priorityCategory: "High Priority",
+    assignedCounselor: "u5",
+    activities: [
+      { id: "a64", leadId: "l33", type: "Lead Created", description: "YouTube tutorial viewer", timestamp: "2026-03-05T10:00:00" },
+      { id: "a65", leadId: "l33", type: "Admission Completed", description: "Admission for Digital Marketing", timestamp: "2026-03-09T15:00:00" },
+    ],
+  },
+  {
+    id: "l34", name: "Karan Bhatt", phone: "9876543243", email: "karan.b@email.com", source: "Partner Institute", campaignId: "c3",
+    interestedCourse: "Game Development", assignedTelecallerId: "u3", status: "Admission", createdAt: "2026-03-03",
+    leadScore: 90, leadQuality: "Hot", budgetRange: "₹1.9L", urgencyLevel: "High",
+    highestQualification: "B.Tech", currentStatus: "Fresher", careerGoal: "Full Stack Developer", preferredStartTime: "Immediate",
+    leadSourceFormType: "Register Now", leadMotivation: "Job Placement",
+    intentScore: 88, intentCategory: "High Intent", temperature: "Hot", priorityScore: 90, priorityCategory: "High Priority",
+    assignedCounselor: "u5",
+    walkInStatus: "Completed", walkInDate: "2026-03-05", walkInTime: "14:00", walkInCounselor: "u5",
+    scholarshipApplied: true, scholarshipPercentage: 5,
+    activities: [
+      { id: "a66", leadId: "l34", type: "Lead Created", description: "Partner institute referral", timestamp: "2026-03-03T08:00:00" },
+      { id: "a67", leadId: "l34", type: "Admission Completed", description: "Admission for Game Development", timestamp: "2026-03-07T11:00:00" },
+    ],
+  },
 ];
 
 /* ═══════ CALL LOGS ═══════ */
@@ -599,9 +643,8 @@ export const mockFollowUps: FollowUp[] = [
   { id: "f14", leadId: "l25", assignedTo: "u5", date: "2026-03-22", notes: "Follow up on counseling outcome", completed: true, createdAt: "2026-03-18", followUpType: "Phone Call" },
 ];
 
-/* ═══════ ADMISSIONS (12 students across Red Apple courses) ═══════ */
-// Total spend: ₹53,000 | Total revenue: ₹6,28,000 → ROAS ~11.8x (realistic, below 16x target)
-// Avg ticket: ₹52,333 | CPA: ₹4,417 (under ₹6000 threshold)
+/* ═══════ ADMISSIONS (16 students across Red Apple courses) ═══════ */
+// Sources: LinkedIn(2), Meta(4), Walk-in(2), Instagram(2), Education Fair(1), Alumni Referral(1), Google(1), Referral(1), YouTube(1), Partner Institute(1)
 export const mockAdmissions: Admission[] = [
   {
     id: "a1", leadId: "l6", studentName: "Ishita Chopra", phone: "9876543215", email: "ishita@email.com",
@@ -749,6 +792,40 @@ export const mockAdmissions: Admission[] = [
     ],
     createdAt: "2026-03-08",
     scholarshipApplied: true, scholarshipPercentage: 20, emiSelected: false,
+  },
+  // ── Admissions from Referral, YouTube, Partner Institute ──
+  {
+    id: "a14", leadId: "l32", studentName: "Deepak Verma", phone: "9876543241", email: "deepak.v@email.com",
+    courseSelected: "UI/UX Design", batch: "UX-2026-B", admissionDate: "2026-03-11", totalFee: 90000,
+    paymentStatus: "Partial", paymentMode: "UPI", chequeNumber: "", transactionId: "TXN20260311002",
+    paymentType: "EMI", emiNumber: 1, totalEmis: 3,
+    paymentHistory: [
+      { id: "ph14", paymentDate: "2026-03-11", amountPaid: 35000, paymentMode: "UPI", referenceNumber: "TXN20260311002", paymentType: "EMI", emiNumber: 1 },
+    ],
+    createdAt: "2026-03-11",
+    scholarshipApplied: true, scholarshipPercentage: 10, emiSelected: true,
+  },
+  {
+    id: "a15", leadId: "l33", studentName: "Manisha Rao", phone: "9876543242", email: "manisha.r@email.com",
+    courseSelected: "Digital Marketing", batch: "DM-2026-C", admissionDate: "2026-03-09", totalFee: 90000,
+    paymentStatus: "Paid", paymentMode: "Online Transfer", chequeNumber: "", transactionId: "TXN20260309001",
+    paymentType: "Full Payment",
+    paymentHistory: [
+      { id: "ph15", paymentDate: "2026-03-09", amountPaid: 90000, paymentMode: "Online Transfer", referenceNumber: "TXN20260309001", paymentType: "Full Payment" },
+    ],
+    createdAt: "2026-03-09",
+    scholarshipApplied: false, emiSelected: false,
+  },
+  {
+    id: "a16", leadId: "l34", studentName: "Karan Bhatt", phone: "9876543243", email: "karan.b@email.com",
+    courseSelected: "Game Development", batch: "GD-2026-B", admissionDate: "2026-03-07", totalFee: 190000,
+    paymentStatus: "Partial", paymentMode: "Online Transfer", chequeNumber: "", transactionId: "TXN20260307002",
+    paymentType: "EMI", emiNumber: 1, totalEmis: 4,
+    paymentHistory: [
+      { id: "ph16", paymentDate: "2026-03-07", amountPaid: 50000, paymentMode: "Online Transfer", referenceNumber: "TXN20260307002", paymentType: "EMI", emiNumber: 1 },
+    ],
+    createdAt: "2026-03-07",
+    scholarshipApplied: true, scholarshipPercentage: 5, emiSelected: true,
   },
 ];
 
