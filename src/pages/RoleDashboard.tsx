@@ -634,6 +634,17 @@ function OwnerDashboard() {
         <StatCard title="Avg ATT" value={`${avgATT}d`} icon={<Timer className="h-5 w-5" />} />
       </div>
 
+      {/* Walk-in KPIs */}
+      {(activeSection === "overview" || activeSection === "team") && (
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
+          <StatCard title="Walk-ins Scheduled" value={walkInsScheduled.length} icon={<Calendar className="h-5 w-5" />} />
+          <StatCard title="Walk-ins Completed" value={walkInsCompleted.length} icon={<Target className="h-5 w-5" />} />
+          <StatCard title="Walk-ins No Show" value={walkInsNoShow.length} icon={<AlertTriangle className="h-5 w-5" />} className={walkInsNoShow.length > 0 ? "border-destructive/20" : ""} />
+          <StatCard title="Walk-in Admissions" value={walkInAdmissions.length} icon={<GraduationCap className="h-5 w-5" />} />
+          <StatCard title="Walk-in Conv%" value={`${walkInConvRate}%`} icon={<TrendingUp className="h-5 w-5" />} />
+        </div>
+      )}
+
       {/* ─── Section 2: Revenue Analytics ─── */}
       {(activeSection === "overview" || activeSection === "revenue") && (
         <div className="grid gap-6 lg:grid-cols-3">
