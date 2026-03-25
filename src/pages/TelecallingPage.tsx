@@ -1,6 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
 import { store } from "@/lib/mock-data";
 import { CallLog, CallOutcome, Lead, Admission, NotInterestedReason, FollowUpType, ConversationInsight } from "@/lib/types";
+import {
+  MASTER_CALL_OUTCOMES, MASTER_OBJECTIONS, MASTER_FOLLOWUP_TYPES,
+  MASTER_CAREER_GOALS, MASTER_LEAD_MOTIVATIONS, MASTER_COURSE_NAMES,
+} from "@/lib/master-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,9 +29,9 @@ import {
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS
    ═══════════════════════════════════════════════════════════════ */
-const OUTCOMES: CallOutcome[] = ["Connected", "Not answered", "Interested", "Not interested", "Call later", "Wrong Number"];
-const NOT_INTERESTED_REASONS: NotInterestedReason[] = ["Too Expensive", "Course Not Relevant", "Joined Competitor", "No Time"];
-const FOLLOW_UP_TYPES: FollowUpType[] = ["Call", "WhatsApp", "Email", "Counseling Meeting"];
+const OUTCOMES: CallOutcome[] = [...MASTER_CALL_OUTCOMES] as CallOutcome[];
+const NOT_INTERESTED_REASONS: NotInterestedReason[] = [...MASTER_OBJECTIONS] as NotInterestedReason[];
+const FOLLOW_UP_TYPES: FollowUpType[] = [...MASTER_FOLLOWUP_TYPES] as FollowUpType[];
 
 const CHART_COLORS = [
   "hsl(358, 78%, 51%)", "hsl(38, 92%, 50%)", "hsl(142, 71%, 45%)",

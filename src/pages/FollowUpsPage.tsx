@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { store } from "@/lib/mock-data";
-import { FollowUp } from "@/lib/types";
+import { FollowUp, FollowUpType } from "@/lib/types";
+import { MASTER_FOLLOWUP_TYPES } from "@/lib/master-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

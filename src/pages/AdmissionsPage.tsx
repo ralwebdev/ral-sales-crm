@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { store } from "@/lib/mock-data";
 import { Admission, PaymentStatus, PaymentMode, PaymentType, PaymentHistoryEntry } from "@/lib/types";
+import {
+  MASTER_PAYMENT_MODES, MASTER_COURSE_NAMES, MASTER_BATCH_TIMINGS,
+  MASTER_SCHOLARSHIP_LEVELS,
+} from "@/lib/master-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +14,7 @@ import { StatCard } from "@/components/StatCard";
 import { GraduationCap, IndianRupee, UserCheck, Plus, CreditCard, AlertCircle, CheckCircle2, User, Phone, Building2, CalendarClock } from "lucide-react";
 import { toast } from "sonner";
 
-const PAYMENT_MODES: PaymentMode[] = ["Cash", "Cheque", "Online Transfer"];
+const PAYMENT_MODES: PaymentMode[] = [...MASTER_PAYMENT_MODES] as PaymentMode[];
 const PAYMENT_TYPES: PaymentType[] = ["Admission Fee", "Seat Booking", "Registration", "EMI"];
 
 function getReferenceDisplay(mode: PaymentMode | "", chequeNumber: string, transactionId: string) {
