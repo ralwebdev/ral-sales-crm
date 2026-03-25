@@ -41,36 +41,38 @@ function TelecallerDashboard() {
   const myFollowUps = followUps.filter((f) => f.assignedTo === currentUser!.id && !f.completed && f.date <= today);
   const highPriority = activeLeads.filter((l) => l.priorityCategory === "High Priority");
   const newLeads = activeLeads.filter((l) => daysBetween(l.createdAt, today) <= 1);
+  const callbackLeads = activeLeads.filter((l) => l.leadSourceFormType === "Free Callback");
+  const counsellingReqs = activeLeads.filter((l) => l.leadSourceFormType === "Free Counselling");
+  const applicationLeads = activeLeads.filter((l) => l.leadSourceFormType === "Apply Now");
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Telecaller Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Your daily telecalling overview</p>
+        <p className="text-sm text-muted-foreground">Welcome, {currentUser!.name}</p>
       </div>
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Calls Pending" value={activeLeads.filter((l) => !myLogs.some((cl) => cl.leadId === l.id)).length} icon={<Phone className="h-5 w-5" />} />
-        <StatCard title="Follow-ups Today" value={myFollowUps.length} icon={<Calendar className="h-5 w-5" />} />
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <StatCard title="New Leads" value={newLeads.length} icon={<UserPlus className="h-5 w-5" />} />
-        <StatCard title="High Priority" value={highPriority.length} icon={<Star className="h-5 w-5" />} />
+        <StatCard title="Callback Requests" value={callbackLeads.length} icon={<Phone className="h-5 w-5" />} />
+        <StatCard title="Counselling Requests" value={counsellingReqs.length} icon={<GraduationCap className="h-5 w-5" />} />
+        <StatCard title="Application Leads" value={applicationLeads.length} icon={<Target className="h-5 w-5" />} />
       </div>
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <StatCard title="Calls Today" value={todayLogs.length} icon={<PhoneCall className="h-5 w-5" />} />
         <StatCard title="Connected" value={connected} icon={<Zap className="h-5 w-5" />} />
-        <StatCard title="Follow-ups Scheduled" value={myLogs.filter((cl) => cl.nextFollowUp).length} icon={<Clock className="h-5 w-5" />} />
-        <StatCard title="Leads Qualified" value={myLeads.filter((l) => l.status === "Qualified" || l.status === "Counseling").length} icon={<Target className="h-5 w-5" />} />
+        <StatCard title="Follow-ups Today" value={myFollowUps.length} icon={<Calendar className="h-5 w-5" />} />
+        <StatCard title="High Priority" value={highPriority.length} icon={<Star className="h-5 w-5" />} />
       </div>
 
-      {/* High priority queue */}
-      <div className="rounded-xl bg-card p-5 shadow-card">
-        <h3 className="mb-3 text-sm font-semibold text-card-foreground flex items-center gap-2"><Target className="h-4 w-4 text-destructive" /> High Priority Leads</h3>
-        {highPriority.length === 0 ? <p className="text-sm text-muted-foreground">No high priority leads right now</p> : (
+      {highPriority.length > 0 && (
+        <div className="rounded-xl bg-card p-5 shadow-card">
+          <h3 className="mb-3 text-sm font-semibold text-card-foreground flex items-center gap-2"><Target className="h-4 w-4 text-destructive" /> High Priority Leads</h3>
           <div className="space-y-2">
             {highPriority.slice(0, 5).map((l) => (
               <div key={l.id} className="flex items-center justify-between rounded-lg border p-3">
                 <div>
                   <p className="text-sm font-medium text-card-foreground">{l.name}</p>
-                  <p className="text-xs text-muted-foreground">{l.interestedCourse} · {l.source}</p>
+                  <p className="text-xs text-muted-foreground">{l.interestedCourse} · {l.source} {l.leadSourceFormType ? `· ${l.leadSourceFormType}` : ""}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">{l.priorityScore || 0} pts</Badge>
@@ -79,10 +81,9 @@ function TelecallerDashboard() {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Follow-ups due */}
       {myFollowUps.length > 0 && (
         <div className="rounded-xl bg-card p-5 shadow-card">
           <h3 className="mb-3 text-sm font-semibold text-card-foreground flex items-center gap-2"><Calendar className="h-4 w-4 text-warning" /> Follow-ups Due Today</h3>
