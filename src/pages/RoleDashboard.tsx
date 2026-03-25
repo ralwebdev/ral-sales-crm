@@ -45,17 +45,21 @@ function TelecallerDashboard() {
   const counsellingReqs = activeLeads.filter((l) => l.leadSourceFormType === "Free Counselling");
   const applicationLeads = activeLeads.filter((l) => l.leadSourceFormType === "Apply Now");
 
+  // Walk-in metrics
+  const walkInsScheduled = myLeads.filter((l) => l.walkInStatus === "Scheduled" || l.walkInStatus === "Completed" || l.walkInStatus === "No Show");
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Telecaller Dashboard</h1>
         <p className="text-sm text-muted-foreground">Welcome, {currentUser!.name}</p>
       </div>
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
         <StatCard title="New Leads" value={newLeads.length} icon={<UserPlus className="h-5 w-5" />} />
         <StatCard title="Callback Requests" value={callbackLeads.length} icon={<Phone className="h-5 w-5" />} />
         <StatCard title="Counselling Requests" value={counsellingReqs.length} icon={<GraduationCap className="h-5 w-5" />} />
         <StatCard title="Application Leads" value={applicationLeads.length} icon={<Target className="h-5 w-5" />} />
+        <StatCard title="Walk-ins Scheduled" value={walkInsScheduled.length} icon={<Calendar className="h-5 w-5" />} />
       </div>
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <StatCard title="Calls Today" value={todayLogs.length} icon={<PhoneCall className="h-5 w-5" />} />
@@ -111,11 +115,14 @@ function TelecallerDashboard() {
    COUNSELOR DASHBOARD
    ═══════════════════════════════════════════════════════════════ */
 function CounselorDashboard() {
+  const { currentUser } = useAuth();
   const leads = store.getLeads();
   const admissions = store.getAdmissions();
+  const followUps = store.getFollowUps();
   const today = new Date().toISOString().split("T")[0];
 
-  const pendingCounseling = leads.filter((l) => l.status === "Counseling");
+  const myLeads = leads.filter((l) => l.assignedCounselor === currentUser!.id);
+  const pendingCounseling = myLeads.filter((l) => l.status === "Counseling");
   const hotLeads = leads.filter((l) => l.intentCategory === "High Intent" && l.qualification?.budgetConfirmed && l.status !== "Admission" && l.status !== "Lost");
   const admissionsToday = admissions.filter((a) => a.admissionDate === today);
   const scholarshipReqs = leads.filter((l) => l.scholarshipApplied && l.status !== "Admission" && l.status !== "Lost");
@@ -125,12 +132,37 @@ function CounselorDashboard() {
     return course && course.fee >= 160000 && l.status !== "Admission" && l.status !== "Lost";
   });
 
+  // Walk-in metrics
+  const walkInsAssigned = myLeads.filter((l) => l.walkInStatus && l.walkInStatus !== "Not Scheduled");
+  const walkInsScheduledToday = walkInsAssigned.filter((l) => l.walkInDate === today && l.walkInStatus === "Scheduled");
+  const walkInsCompleted = walkInsAssigned.filter((l) => l.walkInStatus === "Completed");
+  const walkInsCompletedToday = walkInsCompleted.filter((l) => l.walkInDate === today);
+  const walkInAdmissions = admissions.filter((a) => {
+    const lead = leads.find((l) => l.id === a.leadId);
+    return lead?.walkInStatus === "Completed" && lead?.assignedCounselor === currentUser!.id;
+  });
+  const walkInConvRate = walkInsCompleted.length > 0 ? ((walkInAdmissions.length / walkInsCompleted.length) * 100).toFixed(1) : "0";
+
+  // Follow-up KPIs
+  const myFollowUps = followUps.filter((f) => f.assignedTo === currentUser!.id);
+  const overdueFU = myFollowUps.filter((f) => !f.completed && f.date < today);
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Counselor Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Convert qualified leads into admissions</p>
+        <p className="text-sm text-muted-foreground">Welcome, {currentUser!.name}</p>
       </div>
+
+      {/* Walk-in metrics */}
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
+        <StatCard title="Walk-ins Assigned" value={walkInsAssigned.length} icon={<Users className="h-5 w-5" />} />
+        <StatCard title="Today's Walk-ins" value={walkInsScheduledToday.length} icon={<Calendar className="h-5 w-5" />} />
+        <StatCard title="Completed Today" value={walkInsCompletedToday.length} icon={<Target className="h-5 w-5" />} />
+        <StatCard title="Walk-in Conv%" value={`${walkInConvRate}%`} icon={<TrendingUp className="h-5 w-5" />} />
+        <StatCard title="Overdue Follow-ups" value={overdueFU.length} icon={<AlertTriangle className="h-5 w-5" />} className={overdueFU.length > 0 ? "border-destructive/20" : ""} />
+      </div>
+
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         <StatCard title="Admission Discussions" value={pendingCounseling.length} icon={<Users className="h-5 w-5" />} />
         <StatCard title="Scholarship Requests" value={scholarshipReqs.length} icon={<DollarSign className="h-5 w-5" />} />

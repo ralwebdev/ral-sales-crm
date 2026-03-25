@@ -686,6 +686,35 @@ export default function TelecallingPage() {
                             </Select>
                           </div>
                         </div>
+
+                        {/* Walk-in scheduling (only for Interested) */}
+                        {outcomeForm.outcome === "Interested" && (
+                          <>
+                            <Separator />
+                            <div className="flex items-center gap-3">
+                              <input type="checkbox" id="scheduleWalkIn" checked={outcomeForm.scheduleWalkIn}
+                                onChange={(e) => setOutcomeForm({ ...outcomeForm, scheduleWalkIn: e.target.checked })}
+                                className="h-4 w-4 rounded border-input accent-primary" />
+                              <Label htmlFor="scheduleWalkIn" className="text-xs font-semibold text-primary cursor-pointer">Schedule Walk-In Counseling</Label>
+                            </div>
+                            {outcomeForm.scheduleWalkIn && (
+                              <div className="grid grid-cols-3 gap-3 rounded-lg border border-success/20 bg-success/5 p-3">
+                                <div>
+                                  <Label className="text-xs">Walk-In Date</Label>
+                                  <Input type="date" value={outcomeForm.walkInDate} onChange={(e) => setOutcomeForm({ ...outcomeForm, walkInDate: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Walk-In Time</Label>
+                                  <Input type="time" value={outcomeForm.walkInTime} onChange={(e) => setOutcomeForm({ ...outcomeForm, walkInTime: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Counselor</Label>
+                                  <Input value="Manjari Chakraborty" disabled className="h-8 text-sm bg-muted" />
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     )}
 
