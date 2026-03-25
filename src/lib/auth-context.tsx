@@ -75,6 +75,7 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
     { to: "/leads", label: "Leads" },
     { to: "/telecalling", label: "Telecalling" },
     { to: "/counseling", label: "Counseling" },
+    { to: "/revenue", label: "Revenue" },
     { to: "/follow-ups", label: "Follow-ups" },
     { to: "/admissions", label: "Admissions" },
   ],
@@ -94,6 +95,7 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
     { to: "/", label: "Dashboard" },
     { to: "/campaigns", label: "Campaigns" },
     { to: "/leads", label: "Leads" },
+    { to: "/revenue", label: "Revenue" },
   ],
   telecalling_manager: [
     { to: "/", label: "Dashboard" },
@@ -107,6 +109,7 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
     { to: "/leads", label: "Leads" },
     { to: "/telecalling", label: "Telecalling" },
     { to: "/counseling", label: "Counseling" },
+    { to: "/revenue", label: "Revenue" },
     { to: "/follow-ups", label: "Follow-ups" },
     { to: "/admissions", label: "Admissions" },
   ],

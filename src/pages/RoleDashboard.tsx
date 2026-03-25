@@ -545,6 +545,16 @@ function OwnerDashboard() {
 
   const [activeSection, setActiveSection] = useState<string>("overview");
 
+  // Revenue targets
+  const targets = (() => {
+    const stored = localStorage.getItem("crm_revenue_targets");
+    if (stored) return JSON.parse(stored);
+    return { monthlyTarget: 800000, roasTarget: 16, maxCPA: 6000 };
+  })();
+  const roasOnTrack = parseFloat(roas) >= targets.roasTarget;
+  const cpaOnTrack = cac <= targets.maxCPA || admissions.length === 0;
+  const admissionsNeeded = avgFee > 0 ? Math.ceil(targets.monthlyTarget / avgFee) : 0;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -565,6 +575,20 @@ function OwnerDashboard() {
           ))}
         </div>
       </div>
+
+      {/* Revenue alerts */}
+      {(!roasOnTrack && totalSpend > 0) && (
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-2.5 text-sm text-destructive">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          ROAS is {roas}x — below {targets.roasTarget}x target. <a href="/revenue" className="underline font-medium ml-1">View Revenue Engine →</a>
+        </div>
+      )}
+      {!cpaOnTrack && (
+        <div className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-2.5 text-sm text-destructive">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          Warning: Admission acquisition cost (₹{cac.toLocaleString()}) exceeding ₹{targets.maxCPA.toLocaleString()} threshold.
+        </div>
+      )}
 
       {/* ─── Section 1: KPI Ribbon (always visible) ─── */}
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
