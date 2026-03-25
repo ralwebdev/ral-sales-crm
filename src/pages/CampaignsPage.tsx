@@ -2,9 +2,11 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { store } from "@/lib/mock-data";
 import {
   Campaign, CampaignPlatform, CampaignObjective, CampaignApprovalStatus,
-  AudienceType, RetargetingSource, AdType, AdSet, AdCreative, LandingPage, UTMTracking,
+  AudienceType, RetargetingSource, AdType, AdSet, AdCreative, LandingPage, UTMTracking, Lead,
 } from "@/lib/types";
 import { MASTER_LOCATIONS, MASTER_COURSE_NAMES } from "@/lib/master-schema";
+import { useAuth } from "@/lib/auth-context";
+import { MarketingLeadForm } from "@/components/MarketingLeadForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { StatCard } from "@/components/StatCard";
 import {
   Plus, Megaphone, Target, TrendingUp, BarChart3, PieChart, DollarSign,
-  AlertCircle, CheckCircle2, Users, ArrowDownRight, ArrowUpRight, Eye, Layers,
+  AlertCircle, CheckCircle2, Users, ArrowDownRight, ArrowUpRight, Eye, Layers, UserPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PieChart as RPieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid, Legend } from "recharts";
