@@ -9,7 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import {
   Phone, PhoneCall, Users, Target, Calendar, GraduationCap, Megaphone,
   TrendingUp, DollarSign, Activity, Shield, Clock, Star, Zap, BarChart3,
-  UserPlus, Settings, AlertTriangle, Timer, Download, ArrowUpRight, CheckCircle2, FileText
+  UserPlus, Settings, AlertTriangle, Timer, Download, ArrowUpRight, CheckCircle2, FileText,
+  Building2, School,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
