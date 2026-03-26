@@ -4,6 +4,10 @@ import { Lead, LeadActivity } from "@/lib/types";
 import {
   MASTER_LEAD_SOURCES, MASTER_COURSE_NAMES, MASTER_LOCATIONS,
 } from "@/lib/master-schema";
+import {
+  PROGRAM_CHANNELS, INTERNSHIP_COURSES, INTERNSHIP_DURATIONS,
+  INTERNSHIP_LOCATIONS, INTERNSHIP_FEE_BANDS, INTERNSHIP_ENROLLMENT_TYPES,
+} from "@/lib/vertical-schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,6 +65,9 @@ export function MarketingLeadForm({ onSave, onCancel, creatorName = "Marketing" 
   const [form, setForm] = useState({
     name: "", phone: "", email: "", source: "", campaignId: "",
     purposeOfInquiry: "", interestedCourse: "", city: "", notes: "",
+    programChannel: "Individual Course Admission" as string,
+    internshipCourse: "", internshipDuration: "", internshipLocation: "",
+    internshipFee: "", internshipEnrollmentType: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDirty, setIsDirty] = useState(false);
