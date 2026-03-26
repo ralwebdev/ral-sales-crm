@@ -202,6 +202,15 @@ export function MarketingLeadForm({ onSave, onCancel, creatorName = "Marketing" 
           <FieldError msg={errors.email} />
         </div>
 
+        {/* Program Channel */}
+        <div>
+          <Label>Program Channel <span className="text-destructive">*</span></Label>
+          <Select value={form.programChannel} onValueChange={(v) => set("programChannel", v)}>
+            <SelectTrigger><SelectValue placeholder="Select program channel" /></SelectTrigger>
+            <SelectContent>{PROGRAM_CHANNELS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label>Lead Source <span className="text-destructive">*</span></Label>
@@ -220,22 +229,78 @@ export function MarketingLeadForm({ onSave, onCancel, creatorName = "Marketing" 
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label>Purpose of Inquiry</Label>
-            <Select value={form.purposeOfInquiry} onValueChange={(v) => set("purposeOfInquiry", v)}>
-              <SelectTrigger><SelectValue placeholder="Select purpose" /></SelectTrigger>
-              <SelectContent>{PURPOSE_OPTIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
-            </Select>
+        {/* Conditional: Individual Course Admission */}
+        {form.programChannel === "Individual Course Admission" && (
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Purpose of Inquiry</Label>
+              <Select value={form.purposeOfInquiry} onValueChange={(v) => set("purposeOfInquiry", v)}>
+                <SelectTrigger><SelectValue placeholder="Select purpose" /></SelectTrigger>
+                <SelectContent>{PURPOSE_OPTIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Course Interested</Label>
+              <Select value={form.interestedCourse} onValueChange={(v) => set("interestedCourse", v)}>
+                <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
+                <SelectContent>{MASTER_COURSE_NAMES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
           </div>
-          <div>
-            <Label>Course Interested</Label>
-            <Select value={form.interestedCourse} onValueChange={(v) => set("interestedCourse", v)}>
-              <SelectTrigger><SelectValue placeholder="Select course" /></SelectTrigger>
-              <SelectContent>{MASTER_COURSE_NAMES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-            </Select>
+        )}
+
+        {/* Conditional: Internship Program */}
+        {form.programChannel === "Internship Program" && (
+          <div className="space-y-3 rounded-lg border border-border p-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Internship Details</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Internship Course</Label>
+                <Select value={form.internshipCourse} onValueChange={(v) => set("internshipCourse", v)}>
+                  <SelectTrigger><SelectValue placeholder="Select internship" /></SelectTrigger>
+                  <SelectContent>{INTERNSHIP_COURSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Duration</Label>
+                <Select value={form.internshipDuration} onValueChange={(v) => set("internshipDuration", v)}>
+                  <SelectTrigger><SelectValue placeholder="Select duration" /></SelectTrigger>
+                  <SelectContent>{INTERNSHIP_DURATIONS.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Delivery Location</Label>
+                <Select value={form.internshipLocation} onValueChange={(v) => set("internshipLocation", v)}>
+                  <SelectTrigger><SelectValue placeholder="Select location" /></SelectTrigger>
+                  <SelectContent>{INTERNSHIP_LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Fee Band</Label>
+                <Select value={form.internshipFee} onValueChange={(v) => set("internshipFee", v)}>
+                  <SelectTrigger><SelectValue placeholder="Select fee" /></SelectTrigger>
+                  <SelectContent>{INTERNSHIP_FEE_BANDS.map((f) => <SelectItem key={f} value={String(f)}>₹{f.toLocaleString()}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label>Enrollment Type</Label>
+              <Select value={form.internshipEnrollmentType} onValueChange={(v) => set("internshipEnrollmentType", v)}>
+                <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                <SelectContent>{INTERNSHIP_ENROLLMENT_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Conditional: College/School — redirect message */}
+        {(form.programChannel === "College Collaboration Program" || form.programChannel === "School Training Program") && (
+          <div className="rounded-lg bg-accent/60 p-3 text-xs text-accent-foreground">
+            For {form.programChannel === "College Collaboration Program" ? "college" : "school"} programs, please use the <strong>Institutional Sales</strong> page to create and manage accounts.
+          </div>
+        )}
 
         <div>
           <Label>City / Location</Label>
