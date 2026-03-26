@@ -698,7 +698,7 @@ function OwnerDashboard() {
           <p className="text-xs sm:text-sm text-muted-foreground">Financial & operational command center</p>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {["overview", "revenue", "pipeline", "team", "marketing", "insights"].map((tab) => (
+          {["overview", "revenue", "verticals", "pipeline", "team", "marketing", "insights"].map((tab) => (
             <button key={tab} onClick={() => setActiveSection(tab)}
               className={`rounded-lg px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-medium capitalize transition-colors ${activeSection === tab ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-accent"}`}>
               {tab}
