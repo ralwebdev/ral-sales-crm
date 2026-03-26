@@ -1,4 +1,13 @@
 import { Campaign, Lead, CallLog, FollowUp, Admission, User, UTMTracking, LeadActivity, Course } from "./types";
+import {
+  CollegeAccount, CollegeProgram, CollegeStudent,
+  SchoolAccount, SchoolProgram, SchoolStudent,
+  InternshipAdmission,
+} from "./vertical-types";
+import {
+  mockInternshipAdmissions, mockCollegeAccounts, mockCollegePrograms, mockCollegeStudents,
+  mockSchoolAccounts, mockSchoolPrograms, mockSchoolStudents, internshipLeadEntries,
+} from "./vertical-data";
 
 const defaultUtm: UTMTracking = { utmSource: "", utmMedium: "", utmCampaign: "", utmContent: "", utmTerm: "" };
 
