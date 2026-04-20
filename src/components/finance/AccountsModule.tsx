@@ -149,6 +149,9 @@ function DashboardTab({ onJump }: { onJump: (id: string) => void }) {
   const editsToday = edits.filter(e => new Date(e.at).toDateString() === todayKey).length;
   const highValueChanges = edits.filter(e => e.highValue).length;
   const revisedBilling = edits.reduce((s, e) => s + e.amountDelta, 0);
+  const emiMetrics = computeEmiMetrics(fin.emiSchedules);
+  const riskRows = computeStudentRisk(fin.invoices, fin.emiSchedules);
+  const riskAtStake = riskRows.filter(r => r.riskLevel !== "low").reduce((s, r) => s + r.balanceDue, 0);
   const totalBilled = fin.invoices.reduce((s, i) => s + i.total, 0);
   const totalCollected = fin.payments.reduce((s, p) => s + p.amount, 0);
   const outstanding = fin.invoices.reduce((s, i) => s + (i.total - i.amountPaid), 0);
