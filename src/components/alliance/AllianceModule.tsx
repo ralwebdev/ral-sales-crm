@@ -122,9 +122,11 @@ export function AllianceModule({ scope, executiveId, initialTab, initialAction, 
     const allContacts = allianceStore.getContacts();
 
     // Scope filter for executive
-    const inst = scope === "executive" && executiveId
+    let inst = scope === "executive" && executiveId
       ? allInst.filter((i) => i.assignedTo === executiveId)
       : allInst;
+    if (stageFilter !== "all") inst = inst.filter((i) => i.pipelineStage === stageFilter);
+    if (districtFilter !== "all") inst = inst.filter((i) => i.district === districtFilter);
     const instIds = new Set(inst.map((i) => i.id));
     return {
       institutions: inst,
@@ -139,7 +141,7 @@ export function AllianceModule({ scope, executiveId, initialTab, initialAction, 
         : allExpenses.filter((e) => instIds.has(e.institutionId)),
       contacts: allContacts.filter((c) => instIds.has(c.institutionId)),
     };
-  }, [version, scope, executiveId]);
+  }, [version, scope, executiveId, stageFilter, districtFilter]);
 
   // ── KPIs ──
   const totalInstitutions = data.institutions.length;
