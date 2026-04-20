@@ -1,6 +1,6 @@
 import {
   Invoice, Payment, EmiSchedule, Expense, Vendor, VendorBill,
-  Budget, CashFlowEntry, FinanceLog, RevenueStream, ExpenseCategory,
+  Budget, CashFlowEntry, FinanceLog, ExpenseCategory, PaymentMode,
 } from "./finance-types";
 
 const KEY = "ral_finance_v1";
@@ -336,8 +336,6 @@ export function payEmi(id: string, mode: PaymentMode, by: string) {
   log("EMI", id, "paid", by);
   save({ ...state });
 }
-
-import type { PaymentMode } from "./finance-types";
 
 /* ───────── Helpers / analytics ───────── */
 export function recomputeOverdue() {
