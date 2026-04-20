@@ -1405,10 +1405,40 @@ export default function RoleDashboard() {
     case "telecalling_manager": return <TelecallingManagerDashboard />;
     case "owner": return <OwnerDashboard />;
     case "admin": return <AdminDashboard />;
+    case "alliance_manager": return <AllianceManagerDashboard />;
+    case "alliance_executive": return <AllianceExecutiveDashboard />;
     default: return (
       <div className="flex items-center justify-center h-64">
         <p className="text-sm text-destructive">You do not have permission to access this dashboard.</p>
       </div>
     );
   }
+}
+
+// ── Alliance Dashboards (lightweight wrappers around shared module) ──
+import { AllianceModule } from "@/components/alliance/AllianceModule";
+
+function AllianceManagerDashboard() {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Industry Alliances — Manager</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">Full visibility across institutions, executives & pipeline</p>
+      </div>
+      <AllianceModule scope="manager" />
+    </div>
+  );
+}
+
+function AllianceExecutiveDashboard() {
+  const { currentUser } = useAuth();
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">My Alliances</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">Your assigned institutions & today's tasks</p>
+      </div>
+      <AllianceModule scope="executive" executiveId={currentUser?.id} />
+    </div>
+  );
 }
