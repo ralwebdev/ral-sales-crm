@@ -15,12 +15,17 @@ import { KpiCard, todayIso, daysBetween, confetti } from "@/components/alliance/
 import { PIPELINE_STAGES } from "@/lib/alliance-types";
 import type { AlliancePipelineStage } from "@/lib/alliance-types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 
 const userLabel = (id: string) => allianceUsers.find((u) => u.id === id)?.name ?? id;
 
 export default function AllianceInstitutionProfile() {
   const { id } = useParams<{ id: string }>();
+  const { currentUser } = useAuth();
+  const isAllianceRole = currentUser?.role === "alliance_manager" || currentUser?.role === "alliance_executive";
+  const backTo = isAllianceRole ? "/alliances" : "/institutional";
+  const backLabel = isAllianceRole ? "Back to Industry Alliances" : "Back to Institutional Sales";
   const [version, setVersion] = useState(0);
   const bump = () => setVersion((v) => v + 1);
 
@@ -64,7 +69,7 @@ export default function AllianceInstitutionProfile() {
   if (!inst) {
     return (
       <div className="space-y-4">
-        <Link to="/institutional" className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Back</Link>
+        <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Back</Link>
         <div className="rounded-xl bg-card p-12 shadow-card text-center">
           <p className="text-sm text-muted-foreground">Institution not found.</p>
         </div>
@@ -86,7 +91,7 @@ export default function AllianceInstitutionProfile() {
 
   return (
     <div className="space-y-5">
-      <Link to="/institutional" className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Back to Institutional Sales</Link>
+      <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />{backLabel}</Link>
 
       {/* Header */}
       <div className="rounded-xl bg-card p-5 shadow-card">

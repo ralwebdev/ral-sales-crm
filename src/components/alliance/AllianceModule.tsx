@@ -5,7 +5,7 @@
  *
  * Encapsulates Phases 1-5: CRUD, dashboards, automation, reports/export.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { allianceStore, downloadCSV } from "@/lib/alliance-data";
 import {
@@ -72,11 +72,18 @@ const institutionFields: FieldConfig[] = [
 interface AllianceModuleProps {
   scope: "manager" | "executive";
   executiveId?: string;
+  initialTab?: string;
+  initialAction?: string;
+  initialStageFilter?: string;
+  initialDistrictFilter?: string;
 }
 
-export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
+export function AllianceModule({ scope, executiveId, initialTab, initialAction, initialStageFilter, initialDistrictFilter }: AllianceModuleProps) {
   const { currentUser } = useAuth();
-  const [tab, setTab] = useState("institutions");
+  const validTabs = ["institutions", "contacts", "visits", "tasks", "proposals", "events", "expenses", "reports"];
+  const [tab, setTab] = useState(validTabs.includes(initialTab ?? "") ? (initialTab as string) : "institutions");
+  const [stageFilter, setStageFilter] = useState<string>(initialStageFilter ?? "all");
+  const [districtFilter, setDistrictFilter] = useState<string>(initialDistrictFilter ?? "all");
 
   // dialog state
   const [editInstitution, setEditInstitution] = useState<Institution | null>(null);
@@ -87,6 +94,17 @@ export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
   const [showEventForm, setShowEventForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [drillInstitution, setDrillInstitution] = useState<Institution | null>(null);
+
+  // Auto-open create form based on URL action param
+  useEffect(() => {
+    if (initialAction !== "new") return;
+    if (initialTab === "visits") setShowVisitForm(true);
+    else if (initialTab === "tasks") setShowTaskForm(true);
+    else if (initialTab === "proposals") setShowProposalForm(true);
+    else if (initialTab === "events") setShowEventForm(true);
+    else if (initialTab === "expenses") setShowExpenseForm(true);
+    else if (initialTab === "institutions" && scope === "manager") setShowInstForm(true);
+  }, [initialAction, initialTab, scope]);
 
   // Force re-render after mutations
   const [version, setVersion] = useState(0);
@@ -104,9 +122,11 @@ export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
     const allContacts = allianceStore.getContacts();
 
     // Scope filter for executive
-    const inst = scope === "executive" && executiveId
+    let inst = scope === "executive" && executiveId
       ? allInst.filter((i) => i.assignedTo === executiveId)
       : allInst;
+    if (stageFilter !== "all") inst = inst.filter((i) => i.pipelineStage === stageFilter);
+    if (districtFilter !== "all") inst = inst.filter((i) => i.district === districtFilter);
     const instIds = new Set(inst.map((i) => i.id));
     return {
       institutions: inst,
@@ -121,7 +141,7 @@ export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
         : allExpenses.filter((e) => instIds.has(e.institutionId)),
       contacts: allContacts.filter((c) => instIds.has(c.institutionId)),
     };
-  }, [version, scope, executiveId]);
+  }, [version, scope, executiveId, stageFilter, districtFilter]);
 
   // ── KPIs ──
   const totalInstitutions = data.institutions.length;
@@ -547,16 +567,37 @@ export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
 
         {/* ── Institutions ── */}
         <TabsContent value="institutions" className="space-y-4 mt-4">
-          {/* Pipeline funnel */}
+          {/* Active filter banner */}
+          {(stageFilter !== "all" || districtFilter !== "all") && (
+            <div className="rounded-lg bg-info/5 border-l-4 border-l-info px-3 py-2 flex items-center justify-between gap-3 text-xs">
+              <span className="text-card-foreground">
+                Filtered by:{" "}
+                {stageFilter !== "all" && <Badge variant="outline" className="text-[10px] mr-1">Stage: {stageFilter}</Badge>}
+                {districtFilter !== "all" && <Badge variant="outline" className="text-[10px]">District: {districtFilter}</Badge>}
+                <span className="text-muted-foreground ml-2">{data.institutions.length} match{data.institutions.length === 1 ? "" : "es"}</span>
+              </span>
+              <Button size="sm" variant="ghost" className="h-7 text-[11px]" onClick={() => { setStageFilter("all"); setDistrictFilter("all"); }}>Clear</Button>
+            </div>
+          )}
+          {/* Pipeline funnel — clickable bars filter institutions by stage */}
           <div className="rounded-xl bg-card p-4 sm:p-5 shadow-card">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Pipeline Funnel</h4>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Pipeline Funnel</h4>
+              <span className="text-[10px] text-muted-foreground italic">Click a stage to filter</span>
+            </div>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={pipelineData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="stage" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} interval={0} angle={-15} textAnchor="end" height={50} />
                 <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="count"
+                  fill="hsl(var(--primary))"
+                  radius={[4, 4, 0, 0]}
+                  cursor="pointer"
+                  onClick={(d: { stage?: string }) => d?.stage && setStageFilter(d.stage)}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -566,6 +607,7 @@ export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
             searchable={(r) => `${r.name} ${r.city} ${r.type} ${r.boardUniversity}`}
             onRowClick={(r) => setDrillInstitution(r)}
             searchPlaceholder="Search institutions, cities, boards…"
+            emptyMessage={stageFilter !== "all" || districtFilter !== "all" ? "No institutions match the current filters." : "No institutions yet. Add your first high-potential account."}
             toolbar={scope === "manager" ? <Button size="sm" onClick={() => { setEditInstitution(null); setShowInstForm(true); }}><Plus className="mr-1 h-4 w-4" /> Add Institution</Button> : undefined}
           />
         </TabsContent>

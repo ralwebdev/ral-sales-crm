@@ -3,7 +3,7 @@
  * Drilldown KPI cards, clickable funnel, leaderboard, district heatmap, at-risk accounts.
  */
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Building2, Calendar, FileText, Handshake, TrendingUp, Clock, Trophy, AlertTriangle, MapPin, Sparkles,
 } from "lucide-react";
@@ -23,6 +23,7 @@ const execList = allianceUsers.filter((u) => u.role === "alliance_executive").ma
 const userLabel = (id: string) => allianceUsers.find((u) => u.id === id)?.name ?? id;
 
 export function AllianceManagerDashboard() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<AllianceFilters>(defaultFilters);
   const data = useAllianceData({ scope: "manager", filters });
 
@@ -270,7 +271,10 @@ export function AllianceManagerDashboard() {
       {/* Pipeline + Leaderboard */}
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl bg-card p-5 shadow-card">
-          <h4 className="text-sm font-semibold text-card-foreground mb-1">Pipeline Funnel</h4>
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-card-foreground">Pipeline Funnel</h4>
+            <span className="text-[10px] text-muted-foreground italic">Click a stage to drill down</span>
+          </div>
           <p className="text-xs text-muted-foreground mb-3">See conversion drop-offs by stage.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={funnelData} layout="vertical">
@@ -278,7 +282,13 @@ export function AllianceManagerDashboard() {
               <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} width={110} />
               <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
-              <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+              <Bar
+                dataKey="value"
+                fill="hsl(var(--primary))"
+                radius={[0, 4, 4, 0]}
+                cursor="pointer"
+                onClick={(d: { name?: string }) => d?.name && navigate(`/alliances?tab=institutions&stage=${encodeURIComponent(d.name)}`)}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -293,7 +303,11 @@ export function AllianceManagerDashboard() {
               </thead>
               <tbody>
                 {leaderboard.map((e, idx) => (
-                  <tr key={e.id} className="border-b last:border-0">
+                  <tr
+                    key={e.id}
+                    className="border-b last:border-0 cursor-pointer hover:bg-muted/40 transition"
+                    onClick={() => navigate(`/alliances?tab=institutions&executive=${e.id}`)}
+                  >
                     <td className="py-2">
                       <span className="inline-flex items-center gap-1.5">
                         {idx === 0 && <Trophy className="h-3 w-3 text-warning" />}
@@ -319,19 +333,27 @@ export function AllianceManagerDashboard() {
       {/* District heatmap + At-risk */}
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl bg-card p-5 shadow-card">
-          <h4 className="text-sm font-semibold text-card-foreground mb-1 flex items-center gap-1.5"><MapPin className="h-4 w-4 text-info" />District Heatmap</h4>
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-card-foreground flex items-center gap-1.5"><MapPin className="h-4 w-4 text-info" />District Heatmap</h4>
+            <span className="text-[10px] text-muted-foreground italic">Click to drill down</span>
+          </div>
           <p className="text-xs text-muted-foreground mb-3">Find untapped territories.</p>
           <div className="space-y-1.5">
             {districtData.map((d) => {
               const intensity = Math.min(1, d.visits / Math.max(1, d.count));
               return (
-                <div key={d.district} className="flex items-center gap-2">
+                <button
+                  key={d.district}
+                  type="button"
+                  onClick={() => navigate(`/alliances?tab=institutions&district=${encodeURIComponent(d.district)}`)}
+                  className="w-full flex items-center gap-2 hover:opacity-80 transition text-left"
+                >
                   <span className="text-xs w-32 truncate">{d.district}</span>
                   <div className="flex-1 h-6 rounded bg-muted relative overflow-hidden">
                     <div className="absolute inset-y-0 left-0 bg-primary/80" style={{ width: `${intensity * 100}%`, opacity: 0.3 + intensity * 0.7 }} />
                     <span className="relative z-10 px-2 text-[10px] leading-6">{d.count} inst · {d.visits} visits · {d.mous} MoUs</span>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
