@@ -26,9 +26,10 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
   Building2, School, Users, Target, Calendar, Plus, TrendingUp,
-  DollarSign, GraduationCap, Handshake, MapPin, Phone, Mail, BarChart3,
+  DollarSign, GraduationCap, Handshake, MapPin, Phone, Mail, BarChart3, Briefcase,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { AllianceModule } from "@/components/alliance/AllianceModule";
 
 const CHART_COLORS = ["hsl(358, 78%, 51%)", "hsl(38, 92%, 50%)", "hsl(142, 71%, 45%)", "hsl(220, 70%, 55%)", "hsl(280, 60%, 55%)", "hsl(180, 60%, 45%)"];
 
@@ -133,8 +134,14 @@ export default function InstitutionalSalesPage() {
           <TabsTrigger value="colleges" className="flex-1 text-xs">College Programs</TabsTrigger>
           <TabsTrigger value="schools" className="flex-1 text-xs">School Programs</TabsTrigger>
           <TabsTrigger value="internships" className="flex-1 text-xs">Internships</TabsTrigger>
+          <TabsTrigger value="alliances" className="flex-1 text-xs"><Briefcase className="mr-1 h-3.5 w-3.5" />Industry Alliances</TabsTrigger>
           <TabsTrigger value="analytics" className="flex-1 text-xs">Analytics</TabsTrigger>
         </TabsList>
+
+        {/* ── INDUSTRY ALLIANCES TAB ── */}
+        <TabsContent value="alliances" className="mt-4">
+          <AllianceModule scope="manager" />
+        </TabsContent>
 
         {/* ── COLLEGES TAB ── */}
         <TabsContent value="colleges" className="space-y-4 mt-4">
