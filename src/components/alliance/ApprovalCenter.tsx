@@ -218,7 +218,7 @@ export function ApprovalCenter() {
           </>
         )}
         {showOverride && (
-          <Button size="sm" variant="outline" className="h-7 text-[10px] text-purple-600 border-purple-300 hover:bg-purple-50" onClick={(e) => { e.stopPropagation(); setActionTarget({ req, action: "Override" }); }}>
+          <Button size="sm" variant="outline" className="h-7 text-[10px]" onClick={(e) => { e.stopPropagation(); setActionTarget({ req, action: "Override" }); }}>
             <ShieldAlert className="h-3 w-3 mr-1" /> Override
           </Button>
         )}
@@ -358,7 +358,7 @@ export function ApprovalCenter() {
       {/* Override log (admin/owner) */}
       {isAdmin && overrideLog.length > 0 && (
         <div className="rounded-xl bg-card p-4 shadow-card">
-          <h4 className="text-sm font-semibold text-card-foreground mb-2 flex items-center gap-1.5"><ShieldAlert className="h-4 w-4 text-purple-500" /> Override Log</h4>
+          <h4 className="text-sm font-semibold text-card-foreground mb-2 flex items-center gap-1.5"><ShieldAlert className="h-4 w-4 text-foreground" /> Override Log</h4>
           <div className="space-y-1.5">
             {overrideLog.map((l) => {
               const req = all.find((a) => a.id === l.approvalId);
@@ -387,7 +387,7 @@ export function ApprovalCenter() {
               {actionTarget?.action === "Approve" && <CheckCircle2 className="h-5 w-5 text-success" />}
               {actionTarget?.action === "Reject" && <XCircle className="h-5 w-5 text-destructive" />}
               {actionTarget?.action === "Hold" && <PauseCircle className="h-5 w-5 text-warning" />}
-              {actionTarget?.action === "Override" && <ShieldAlert className="h-5 w-5 text-purple-500" />}
+              {actionTarget?.action === "Override" && <ShieldAlert className="h-5 w-5 text-foreground" />}
               {actionTarget?.action === "Resubmit" && <Sparkles className="h-5 w-5 text-primary" />}
               {actionTarget?.action} Request
             </SheetTitle>
