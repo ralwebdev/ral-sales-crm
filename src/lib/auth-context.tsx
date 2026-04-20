@@ -121,6 +121,7 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
     { to: "/institutional", label: "Institutional" },
     { to: "/follow-ups", label: "Follow-ups" },
     { to: "/admissions", label: "Admissions" },
+    { to: "/approvals", label: "Approvals" },
   ],
   alliance_manager: [
     { to: "/", label: "Dashboard" },
