@@ -541,18 +541,41 @@ function ExpensesTab({ role }: { role: RoleScope }) {
 
   const canApprove = role === "owner" || role === "manager";
 
+  const actOnApproval = (exp: Expense, action: "Approve" | "Reject") => {
+    const req = approvalForExpense(exp.id);
+    const actorRole: UserRole = (currentUser?.role as UserRole) || "accounts_manager";
+    if (req) {
+      const updated = approvalStore.act(req.id, {
+        action,
+        actorId: currentUser?.id || "u0",
+        actorRole,
+        comment: action === "Reject" ? "Rejected via Expenses tab" : undefined,
+      });
+      if (!updated) { toast({ title: "Approval level not configured.", variant: "destructive" }); return; }
+      syncApprovalToExpense(updated, currentUser?.id || "u0");
+    } else {
+      // fallback (legacy expenses without an approval record)
+      setExpenseStatus(exp.id, action === "Approve" ? "Approved" : "Rejected", currentUser?.id || "u0");
+    }
+    toast({ title: action === "Approve" ? "Expense approved" : "Expense rejected" });
+  };
+
   const cols: Column<Expense>[] = [
     { key: "no", header: "Expense #", render: r => <span className="font-mono text-xs">{r.expenseNo}</span>, sortValue: r => r.expenseNo, exportValue: r => r.expenseNo },
     { key: "cat", header: "Category", render: r => <Badge variant="outline" className="text-[10px]">{r.category}</Badge>, exportValue: r => r.category },
     { key: "vendor", header: "Vendor", render: r => r.vendorName || "—", exportValue: r => r.vendorName || "" },
     { key: "amt", header: "Amount", render: r => <span className="font-semibold tabular-nums">{fmtINR(r.total)}</span>, sortValue: r => r.total, exportValue: r => r.total },
     { key: "date", header: "Date", render: r => fmtDate(r.spendDate), sortValue: r => r.spendDate, exportValue: r => fmtDate(r.spendDate) },
+    { key: "tier", header: "Approver", render: r => {
+      try { return <Badge variant="outline" className="text-[10px]">{tierForAmount(r.total).tier.replace(/_/g, " ")}</Badge>; }
+      catch { return <span className="text-xs text-muted-foreground">—</span>; }
+    }, exportValue: r => { try { return tierForAmount(r.total).tier; } catch { return ""; } } },
     { key: "status", header: "Status", render: r => <StatusPill status={r.status} tone={statusTone(r.status)} />, exportValue: r => r.status },
     {
       key: "actions", header: "", render: r => canApprove && r.status === "Pending"
         ? <div className="flex gap-1">
-            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setExpenseStatus(r.id, "Approved", currentUser?.id || "u0"); toast({ title: "Approved" }); }}>Approve</Button>
-            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setExpenseStatus(r.id, "Rejected", currentUser?.id || "u0"); toast({ title: "Rejected" }); }}>Reject</Button>
+            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); actOnApproval(r, "Approve"); }}>Approve</Button>
+            <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); actOnApproval(r, "Reject"); }}>Reject</Button>
           </div>
         : null
     },
@@ -588,7 +611,7 @@ function ExpenseFormDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   const submit = () => {
     if (f.amount <= 0 || !f.description) { toast({ title: "Fill amount + description", variant: "destructive" }); return; }
     const vendor = fin.vendors.find(v => v.id === f.vendorId);
-    createExpense({
+    const exp = createExpense({
       category: f.category,
       vendorId: vendor?.id, vendorName: vendor?.name,
       amount: f.amount, gst: f.gst,
@@ -598,7 +621,14 @@ function ExpenseFormDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       paymentMode: f.paymentMode,
       submittedBy: currentUser?.id || "u0",
     } as any, currentUser?.id || "u0");
-    toast({ title: "Expense submitted for approval" });
+    try {
+      const role = (currentUser?.role as UserRole) || "accounts_executive";
+      const tier = tierForAmount(exp.total);
+      submitExpenseForApproval(exp, currentUser?.id || "u0", role);
+      toast({ title: "Expense submitted", description: `Routed to ${tier.tier.replace(/_/g, " ")} (${tier.approverRole.replace(/_/g, " ")}).` });
+    } catch {
+      toast({ title: "Approval level not configured.", variant: "destructive" });
+    }
     onClose();
   };
 
