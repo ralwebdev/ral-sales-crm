@@ -14,7 +14,8 @@ export type ApprovalRequestType =
   | "Travel Reimbursement"
   | "Visit Claim"
   | "Custom Request"
-  | "Proposal Approval";
+  | "Proposal Approval"
+  | "Invoice Dispatch";
 
 export type ApprovalStatus = "Pending" | "Approved" | "Rejected" | "Hold" | "Overridden" | "Resubmitted";
 export type ApprovalAction = "Approve" | "Reject" | "Hold" | "Override" | "Submit" | "Resubmit";
