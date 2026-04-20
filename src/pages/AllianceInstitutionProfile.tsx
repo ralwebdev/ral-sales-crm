@@ -69,7 +69,7 @@ export default function AllianceInstitutionProfile() {
   if (!inst) {
     return (
       <div className="space-y-4">
-        <Link to="/institutional" className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Back</Link>
+        <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Back</Link>
         <div className="rounded-xl bg-card p-12 shadow-card text-center">
           <p className="text-sm text-muted-foreground">Institution not found.</p>
         </div>
@@ -91,7 +91,7 @@ export default function AllianceInstitutionProfile() {
 
   return (
     <div className="space-y-5">
-      <Link to="/institutional" className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />Back to Institutional Sales</Link>
+      <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" />{backLabel}</Link>
 
       {/* Header */}
       <div className="rounded-xl bg-card p-5 shadow-card">
