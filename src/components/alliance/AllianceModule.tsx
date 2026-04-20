@@ -567,16 +567,37 @@ export function AllianceModule({ scope, executiveId, initialTab, initialAction, 
 
         {/* ── Institutions ── */}
         <TabsContent value="institutions" className="space-y-4 mt-4">
-          {/* Pipeline funnel */}
+          {/* Active filter banner */}
+          {(stageFilter !== "all" || districtFilter !== "all") && (
+            <div className="rounded-lg bg-info/5 border-l-4 border-l-info px-3 py-2 flex items-center justify-between gap-3 text-xs">
+              <span className="text-card-foreground">
+                Filtered by:{" "}
+                {stageFilter !== "all" && <Badge variant="outline" className="text-[10px] mr-1">Stage: {stageFilter}</Badge>}
+                {districtFilter !== "all" && <Badge variant="outline" className="text-[10px]">District: {districtFilter}</Badge>}
+                <span className="text-muted-foreground ml-2">{data.institutions.length} match{data.institutions.length === 1 ? "" : "es"}</span>
+              </span>
+              <Button size="sm" variant="ghost" className="h-7 text-[11px]" onClick={() => { setStageFilter("all"); setDistrictFilter("all"); }}>Clear</Button>
+            </div>
+          )}
+          {/* Pipeline funnel — clickable bars filter institutions by stage */}
           <div className="rounded-xl bg-card p-4 sm:p-5 shadow-card">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Pipeline Funnel</h4>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Pipeline Funnel</h4>
+              <span className="text-[10px] text-muted-foreground italic">Click a stage to filter</span>
+            </div>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={pipelineData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="stage" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} interval={0} angle={-15} textAnchor="end" height={50} />
                 <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey="count"
+                  fill="hsl(var(--primary))"
+                  radius={[4, 4, 0, 0]}
+                  cursor="pointer"
+                  onClick={(d: { stage?: string }) => d?.stage && setStageFilter(d.stage)}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -586,6 +607,7 @@ export function AllianceModule({ scope, executiveId, initialTab, initialAction, 
             searchable={(r) => `${r.name} ${r.city} ${r.type} ${r.boardUniversity}`}
             onRowClick={(r) => setDrillInstitution(r)}
             searchPlaceholder="Search institutions, cities, boards…"
+            emptyMessage={stageFilter !== "all" || districtFilter !== "all" ? "No institutions match the current filters." : "No institutions yet. Add your first high-potential account."}
             toolbar={scope === "manager" ? <Button size="sm" onClick={() => { setEditInstitution(null); setShowInstForm(true); }}><Plus className="mr-1 h-4 w-4" /> Add Institution</Button> : undefined}
           />
         </TabsContent>
