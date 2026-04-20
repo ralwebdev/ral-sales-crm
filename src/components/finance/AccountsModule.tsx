@@ -347,17 +347,18 @@ function InvoiceFormDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   });
 
   const submit = () => {
-    if (!f.customerName || f.subtotal <= 0) { toast({ title: "Fill customer + amount", variant: "destructive" }); return; }
-    createInvoice({
+    if (!f.customerName.trim()) { toast({ title: "Student record not found.", description: "Party (student / institution) name is required.", variant: "destructive" }); return; }
+    if (f.subtotal <= 0) { toast({ title: "Invoice total cannot be zero.", description: "Enter a subtotal greater than ₹0.", variant: "destructive" }); return; }
+    const inv = createInvoice({
       customerId: "c_" + Math.random().toString(36).slice(2, 6),
-      customerName: f.customerName, customerType: f.customerType,
+      customerName: f.customerName.trim(), customerType: f.customerType,
       revenueStream: f.revenueStream, programName: f.programName,
       issueDate: new Date(f.issueDate).toISOString(),
       dueDate: new Date(f.dueDate).toISOString(),
       subtotal: f.subtotal, discount: f.discount,
       gstType: f.gstType, gstRate: f.gstRate, gstin: f.gstin, notes: f.notes,
     } as any, currentUser?.id || "u0");
-    toast({ title: "Invoice created" });
+    toast({ title: "Invoice issued", description: `${inv.invoiceNo} · ${fmtINR(inv.total)} — KPIs updated.` });
     onClose();
   };
 
