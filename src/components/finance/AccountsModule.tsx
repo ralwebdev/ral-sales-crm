@@ -22,6 +22,7 @@ import {
   Wallet, FileText, IndianRupee, AlertTriangle, TrendingUp, Receipt,
   Building2, Briefcase, Lightbulb, PlusCircle, Layers, FilePieChart,
   Truck, Calendar as CalIcon, BadgePercent, Plus, FileDown,
+  Send, Mail, MessageCircle, Download as DownloadIcon, ShieldCheck,
 } from "lucide-react";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
@@ -34,6 +35,11 @@ import { buildVouchers, vouchersToCsv, vouchersToJson, downloadFile, type TxnTyp
 import { submitExpenseForApproval, approvalForExpense, syncApprovalToExpense, tierForAmount } from "@/lib/expense-approval-bridge";
 import { approvalStore } from "@/lib/approvals";
 import type { UserRole } from "@/lib/types";
+import { InvoiceDispatchDialog } from "./InvoiceDispatchDialog";
+import {
+  getDispatches, subscribeDispatch, dispatchForInvoice, registerDispatch, recordSend,
+  type InvoiceDispatch,
+} from "@/lib/invoice-dispatch-store";
 
 const CHART_COLORS = ["hsl(var(--primary))", "#1A1A1A", "#10b981", "#f59e0b", "#6366f1", "#ec4899", "#0ea5e9"];
 
@@ -42,6 +48,14 @@ function useFinance() {
     (l) => subscribeFinance(l),
     () => getFinance(),
     () => getFinance(),
+  );
+}
+
+function useDispatchList() {
+  return useSyncExternalStore(
+    (l) => subscribeDispatch(l),
+    () => getDispatches(),
+    () => getDispatches(),
   );
 }
 
@@ -303,8 +317,40 @@ function RevenueTab() {
 /* ───────── Billing ───────── */
 function BillingTab({ role }: { role: RoleScope }) {
   const fin = useFinance();
+  const dispatches = useDispatchList();
+  const { currentUser } = useAuth();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<Invoice | null>(null);
+  const [dispatchInv, setDispatchInv] = useState<Invoice | null>(null);
+
+  const dispatchByInv = useMemo(() => {
+    const m = new Map<string, InvoiceDispatch>();
+    dispatches.forEach(d => m.set(d.invoiceId, d));
+    return m;
+  }, [dispatches]);
+
+  const canGenerate = role === "owner" || role === "manager" || currentUser?.role === "accounts_executive";
+  const canBulkSend = role === "owner" || role === "manager";
+
+  const visibleInvoices = useMemo(() => {
+    if (role === "owner" || role === "manager") return fin.invoices;
+    const myId = currentUser?.id;
+    return fin.invoices.filter(i => i.createdBy === myId || dispatchByInv.get(i.id)?.generatedBy === myId);
+  }, [fin.invoices, role, currentUser?.id, dispatchByInv]);
+
+  const bulkSendOverdue = () => {
+    const targets = visibleInvoices.filter(i => i.status === "Overdue");
+    targets.forEach(i => {
+      const dsp = registerDispatch({
+        invoiceId: i.id, invoiceNo: i.invoiceNo, docType: "fee_demand_note",
+        recipientName: i.customerName, amount: i.total, format: "pdf",
+        by: currentUser?.id || "u0", byName: currentUser?.name,
+      });
+      recordSend({ id: dsp.id, channel: "email", recipientEmail: `${i.customerName.toLowerCase().replace(/\s+/g, ".")}@example.com`, by: currentUser?.id || "u0", byName: currentUser?.name, success: true });
+    });
+    toast({ title: `${targets.length} fee-due reminders queued`, description: "Overdue invoices dispatched via email." });
+  };
 
   const cols: Column<Invoice>[] = [
     { key: "no", header: "Invoice #", render: r => <span className="font-mono text-xs">{r.invoiceNo}</span>, sortValue: r => r.invoiceNo, exportValue: r => r.invoiceNo },
@@ -315,20 +361,63 @@ function BillingTab({ role }: { role: RoleScope }) {
     { key: "total", header: "Total", render: r => <span className="font-semibold tabular-nums">{fmtINR(r.total)}</span>, sortValue: r => r.total, exportValue: r => r.total },
     { key: "paid", header: "Paid", render: r => <span className="tabular-nums text-emerald-700">{fmtINR(r.amountPaid)}</span>, sortValue: r => r.amountPaid, exportValue: r => r.amountPaid },
     { key: "status", header: "Status", render: r => <StatusPill status={r.status} tone={statusTone(r.status)} />, exportValue: r => r.status },
+    {
+      key: "dispatch", header: "Dispatch",
+      render: r => {
+        const d = dispatchByInv.get(r.id);
+        if (!d) return <span className="text-[11px] text-muted-foreground">—</span>;
+        const tone = d.status.startsWith("sent") ? "success" : d.status === "failed" ? "destructive" : d.status === "pending_approval" ? "warning" : "primary";
+        return <StatusPill status={d.status.replace(/_/g, " ")} tone={tone} />;
+      },
+      exportValue: r => dispatchByInv.get(r.id)?.status || "",
+    },
+    {
+      key: "actions", header: "",
+      render: r => (
+        <Button size="sm" variant="outline" disabled={!canGenerate} onClick={(e) => { e.stopPropagation(); setDispatchInv(r); }} className="gap-1 h-7 text-[11px]">
+          <Send className="h-3 w-3" /> Send
+        </Button>
+      ),
+    },
   ];
+
+  const todayKey = new Date().toDateString();
+  const generatedToday = dispatches.filter(d => new Date(d.generatedAt).toDateString() === todayKey).length;
+  const sentToday = dispatches.filter(d => d.lastSentAt && new Date(d.lastSentAt).toDateString() === todayKey).length;
+  const failed = dispatches.filter(d => d.status === "failed").length;
+  const pendingApproval = dispatches.filter(d => d.status === "pending_approval").length;
+  const sentCount = dispatches.filter(d => d.status.startsWith("sent")).length;
+  const successRate = dispatches.length ? Math.round((sentCount / dispatches.length) * 100) : 0;
 
   return (
     <div className="space-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <FinanceKpi label="Generated Today" value={generatedToday} tone="primary" icon={<FileText className="h-4 w-4" />} />
+        <FinanceKpi label="Sent Today" value={sentToday} tone="success" icon={<Send className="h-4 w-4" />} />
+        <FinanceKpi label="Failed" value={failed} tone={failed > 0 ? "destructive" : "default"} icon={<AlertTriangle className="h-4 w-4" />} />
+        <FinanceKpi label="Pending Approval" value={pendingApproval} tone={pendingApproval > 0 ? "warning" : "default"} icon={<ShieldCheck className="h-4 w-4" />} />
+        <FinanceKpi label="Success Rate" value={`${successRate}%`} tone={successRate >= 80 ? "success" : "warning"} />
+      </div>
       <FinanceTable<Invoice>
-        rows={fin.invoices}
+        rows={visibleInvoices}
         columns={cols}
         searchKeys={["invoiceNo", "customerName", "revenueStream"]}
         onRowClick={(r) => setView(r)}
         exportName="invoices"
-        toolbar={<Button size="sm" onClick={() => setOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Create Invoice</Button>}
+        toolbar={
+          <div className="flex gap-2">
+            {canBulkSend && (
+              <Button size="sm" variant="outline" onClick={bulkSendOverdue} className="gap-1.5">
+                <Mail className="h-3.5 w-3.5" /> Bulk: Overdue Reminders
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Create Invoice</Button>
+          </div>
+        }
       />
       <InvoiceFormDrawer open={open} onClose={() => setOpen(false)} />
       <InvoiceViewDrawer invoice={view} onClose={() => setView(null)} />
+      <InvoiceDispatchDialog invoice={dispatchInv} open={!!dispatchInv} onClose={() => setDispatchInv(null)} />
     </div>
   );
 }
