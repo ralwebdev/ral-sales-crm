@@ -581,6 +581,7 @@ export function AllianceModule({ scope, executiveId, initialTab, initialAction, 
           <TabsTrigger value="proposals" className="text-[11px] sm:text-xs"><FileText className="mr-1 h-3.5 w-3.5" />Proposals</TabsTrigger>
           <TabsTrigger value="events" className="text-[11px] sm:text-xs"><PartyPopper className="mr-1 h-3.5 w-3.5" />Events</TabsTrigger>
           <TabsTrigger value="expenses" className="text-[11px] sm:text-xs"><Receipt className="mr-1 h-3.5 w-3.5" />Expenses</TabsTrigger>
+          <TabsTrigger value="approvals" className="text-[11px] sm:text-xs"><ShieldCheck className="mr-1 h-3.5 w-3.5" />Approvals</TabsTrigger>
           <TabsTrigger value="reports" className="text-[11px] sm:text-xs"><BarChart3 className="mr-1 h-3.5 w-3.5" />Reports</TabsTrigger>
         </TabsList>
 
@@ -689,6 +690,11 @@ export function AllianceModule({ scope, executiveId, initialTab, initialAction, 
             searchPlaceholder="Search expenses…"
             toolbar={<Button size="sm" onClick={() => setShowExpenseForm(true)}><Plus className="mr-1 h-4 w-4" /> Submit Expense</Button>}
           />
+        </TabsContent>
+
+        {/* ── Approvals ── */}
+        <TabsContent value="approvals" className="mt-4">
+          <ApprovalCenter />
         </TabsContent>
 
         {/* ── Reports / Insights ── */}
