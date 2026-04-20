@@ -51,6 +51,14 @@ function useFinance() {
   );
 }
 
+function useDispatchList() {
+  return useSyncExternalStore(
+    (l) => subscribeDispatch(l),
+    () => getDispatches(),
+    () => getDispatches(),
+  );
+}
+
 type RoleScope = "owner" | "manager" | "executive";
 
 function scope(role: string): RoleScope {
