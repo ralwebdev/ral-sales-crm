@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth-context";
 import {
   getFinance, subscribeFinance, recomputeOverdue,
   createInvoice, recordPayment, createExpense, setExpenseStatus,
-  createVendor, createVendorBill, payVendorBill, createBudget, payEmi,
+  createVendor, createVendorBill, payVendorBill, createBudget, payEmi, autoSeedEmisForPartial,
 } from "@/lib/finance-store";
 import {
   Invoice, Payment, Expense, Vendor, VendorBill, Budget, EmiSchedule,
@@ -46,6 +46,8 @@ import { BulkInvoiceDialog } from "./BulkInvoiceDialog";
 import { computeBreakup, detectIntraState, validateGstInput, type GstInputMode } from "@/lib/gst-calc";
 import { InvoiceEditDialog } from "./InvoiceEditDialog";
 import { getInvoiceEdits, subscribeInvoiceEdits, HIGH_VALUE_THRESHOLD, type InvoiceEditEntry } from "@/lib/invoice-edit-store";
+import { ProjectionsTab } from "./ProjectionsTab";
+import { computeEmiMetrics, computeStudentRisk } from "@/lib/revenue-projection";
 
 const CHART_COLORS = ["hsl(var(--primary))", "#1A1A1A", "#10b981", "#f59e0b", "#6366f1", "#ec4899", "#0ea5e9"];
 
@@ -76,6 +78,7 @@ function scope(role: string): RoleScope {
 const ALL_TABS: { id: string; label: string; roles: RoleScope[] }[] = [
   { id: "dashboard", label: "Dashboard", roles: ["owner", "manager", "executive"] },
   { id: "revenue", label: "Revenue", roles: ["owner"] },
+  { id: "projections", label: "Projections", roles: ["owner"] },
   { id: "billing", label: "Billing", roles: ["owner", "manager", "executive"] },
   { id: "collections", label: "Collections", roles: ["owner", "manager", "executive"] },
   { id: "emi", label: "EMI", roles: ["owner", "manager"] },

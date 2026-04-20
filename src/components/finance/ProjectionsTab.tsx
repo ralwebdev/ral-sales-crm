@@ -240,7 +240,7 @@ export function ProjectionsTab() {
                 <TableCell className="font-semibold">{y.year}</TableCell>
                 <TableCell className="text-right tabular-nums">{fmtINR(y.conservative)}</TableCell>
                 <TableCell className="text-right tabular-nums font-semibold">{fmtINR(y.expected)}</TableCell>
-                <TableCell className="text-right tabular-nums text-emerald-700">{fmtINR(y.growth)}</TableCell>
+                <TableCell className="text-right tabular-nums text-success">{fmtINR(y.growth)}</TableCell>
                 <TableCell className="text-right tabular-nums">+{fmtINR(y.growth - y.conservative)}</TableCell>
               </TableRow>
             ))}
