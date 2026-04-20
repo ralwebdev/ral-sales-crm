@@ -30,6 +30,10 @@ import {
 import { FinanceKpi, fmtINR, fmtDate, StatusPill, statusTone } from "./FinanceKpi";
 import { FinanceTable, Column } from "./FinanceTable";
 import { FinanceDrawer } from "./FinanceDrawer";
+import { buildVouchers, vouchersToCsv, vouchersToJson, downloadFile, type TxnType, type DateRange } from "@/lib/tally-export";
+import { submitExpenseForApproval, approvalForExpense, syncApprovalToExpense, tierForAmount } from "@/lib/expense-approval-bridge";
+import { approvalStore } from "@/lib/approvals";
+import type { UserRole } from "@/lib/types";
 
 const CHART_COLORS = ["hsl(var(--primary))", "#1A1A1A", "#10b981", "#f59e0b", "#6366f1", "#ec4899", "#0ea5e9"];
 
