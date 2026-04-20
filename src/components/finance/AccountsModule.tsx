@@ -334,6 +334,7 @@ function BillingTab({ role }: { role: RoleScope }) {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [view, setView] = useState<Invoice | null>(null);
   const [dispatchInv, setDispatchInv] = useState<Invoice | null>(null);
+  const [editInv, setEditInv] = useState<Invoice | null>(null);
 
   const dispatchByInv = useMemo(() => {
     const m = new Map<string, InvoiceDispatch>();
@@ -343,6 +344,7 @@ function BillingTab({ role }: { role: RoleScope }) {
 
   const canGenerate = role === "owner" || role === "manager" || currentUser?.role === "accounts_executive";
   const canBulkSend = role === "owner" || role === "manager";
+  const canEdit = role === "owner" || role === "manager";
 
   const visibleInvoices = useMemo(() => {
     if (role === "owner" || role === "manager") return fin.invoices;
@@ -385,9 +387,16 @@ function BillingTab({ role }: { role: RoleScope }) {
     {
       key: "actions", header: "",
       render: r => (
-        <Button size="sm" variant="outline" disabled={!canGenerate} onClick={(e) => { e.stopPropagation(); setDispatchInv(r); }} className="gap-1 h-7 text-[11px]">
-          <Send className="h-3 w-3" /> Send
-        </Button>
+        <div className="flex gap-1 justify-end">
+          {canEdit && (
+            <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); setEditInv(r); }} className="gap-1 h-7 text-[11px]" title="Edit invoice">
+              <Pencil className="h-3 w-3" />
+            </Button>
+          )}
+          <Button size="sm" variant="outline" disabled={!canGenerate} onClick={(e) => { e.stopPropagation(); setDispatchInv(r); }} className="gap-1 h-7 text-[11px]">
+            <Send className="h-3 w-3" /> Send
+          </Button>
+        </div>
       ),
     },
   ];
@@ -441,6 +450,7 @@ function BillingTab({ role }: { role: RoleScope }) {
       <BulkInvoiceDialog open={bulkOpen} onClose={() => setBulkOpen(false)} />
       <InvoiceViewDrawer invoice={view} onClose={() => setView(null)} />
       <InvoiceDispatchDialog invoice={dispatchInv} open={!!dispatchInv} onClose={() => setDispatchInv(null)} />
+      <InvoiceEditDialog invoice={editInv} open={!!editInv} onClose={() => setEditInv(null)} />
     </div>
   );
 }
