@@ -248,6 +248,10 @@ function DashboardTab({ onJump }: { onJump: (id: string) => void }) {
         <FinanceKpi label="Invoice Edits Today" value={editsToday} hint={`${edits.length} all-time`} tone={editsToday > 0 ? "primary" : "default"} icon={<Pencil className="h-4 w-4" />} onClick={() => onJump("billing")} />
         <FinanceKpi label="High-Value Changes" value={highValueChanges} hint=">₹2.5L" tone={highValueChanges > 0 ? "warning" : "default"} icon={<AlertTriangle className="h-4 w-4" />} />
         <FinanceKpi label="Revised Billing" value={fmtINR(revisedBilling)} hint="Net delta" tone={revisedBilling >= 0 ? "success" : "destructive"} />
+        <FinanceKpi label="EMI Today" value={fmtINR(emiMetrics.todayDue)} tone={emiMetrics.todayDue > 0 ? "warning" : "default"} icon={<CalIcon className="h-4 w-4" />} onClick={() => onJump("emi")} />
+        <FinanceKpi label="Overdue EMI" value={fmtINR(emiMetrics.overdueTotal)} tone={emiMetrics.overdueTotal > 0 ? "destructive" : "success"} icon={<AlertTriangle className="h-4 w-4" />} onClick={() => onJump("emi")} />
+        <FinanceKpi label="Next 30d EMI" value={fmtINR(emiMetrics.next30Expected)} tone="primary" onClick={() => onJump("projections")} />
+        <FinanceKpi label="Risk Revenue" value={fmtINR(riskAtStake)} hint={`${riskRows.filter(r => r.riskLevel !== "low").length} students`} tone={riskAtStake > 0 ? "warning" : "success"} icon={<ShieldCheck className="h-4 w-4" />} onClick={() => onJump("projections")} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
