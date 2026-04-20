@@ -76,7 +76,7 @@ export function ApprovalCenter() {
   const pending = useMemo(() => { void version; return userId ? pendingForRole(userId, role) : []; }, [userId, role, version]);
   const logs = useMemo(() => { void version; return approvalStore.logs(); }, [version]);
 
-  // Apply filters/search
+  if (!currentUser) return null;
   const filtered = useMemo(() => {
     return all.filter((a) => {
       if (filterStatus !== "all" && a.status !== filterStatus) return false;
