@@ -40,6 +40,7 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
   ],
   owner: [
     { to: "/", label: "Dashboard" },
+    { to: "/accounts", label: "Accounts" },
     { to: "/campaigns", label: "Campaigns" },
     { to: "/leads", label: "Leads" },
     { to: "/telecalling", label: "Telecalling" },
