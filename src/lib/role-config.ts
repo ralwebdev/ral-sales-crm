@@ -3,6 +3,7 @@ import { UserRole } from "./types";
 export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = {
   admin: [
     { to: "/", label: "Dashboard" },
+    { to: "/accounts", label: "Accounts" },
     { to: "/campaigns", label: "Campaigns" },
     { to: "/leads", label: "Leads" },
     { to: "/telecalling", label: "Telecalling" },
@@ -57,6 +58,14 @@ export const roleNavConfig: Record<UserRole, { to: string; label: string }[]> = 
     { to: "/", label: "Dashboard" },
     { to: "/alliances", label: "My Alliances" },
   ],
+  accounts_manager: [
+    { to: "/", label: "Dashboard" },
+    { to: "/accounts", label: "Accounts" },
+  ],
+  accounts_executive: [
+    { to: "/", label: "Dashboard" },
+    { to: "/accounts", label: "Accounts" },
+  ],
 };
 
 export const roleLabels: Record<UserRole, string> = {
@@ -68,4 +77,6 @@ export const roleLabels: Record<UserRole, string> = {
   owner: "Owner / Director",
   alliance_manager: "Alliance Manager",
   alliance_executive: "Alliance Executive",
+  accounts_manager: "Accounts Manager",
+  accounts_executive: "Accounts Executive",
 };
