@@ -5,7 +5,7 @@
  *
  * Encapsulates Phases 1-5: CRUD, dashboards, automation, reports/export.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { allianceStore, downloadCSV } from "@/lib/alliance-data";
 import {
@@ -72,11 +72,18 @@ const institutionFields: FieldConfig[] = [
 interface AllianceModuleProps {
   scope: "manager" | "executive";
   executiveId?: string;
+  initialTab?: string;
+  initialAction?: string;
+  initialStageFilter?: string;
+  initialDistrictFilter?: string;
 }
 
-export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
+export function AllianceModule({ scope, executiveId, initialTab, initialAction, initialStageFilter, initialDistrictFilter }: AllianceModuleProps) {
   const { currentUser } = useAuth();
-  const [tab, setTab] = useState("institutions");
+  const validTabs = ["institutions", "contacts", "visits", "tasks", "proposals", "events", "expenses", "reports"];
+  const [tab, setTab] = useState(validTabs.includes(initialTab ?? "") ? (initialTab as string) : "institutions");
+  const [stageFilter, setStageFilter] = useState<string>(initialStageFilter ?? "all");
+  const [districtFilter, setDistrictFilter] = useState<string>(initialDistrictFilter ?? "all");
 
   // dialog state
   const [editInstitution, setEditInstitution] = useState<Institution | null>(null);
@@ -87,6 +94,17 @@ export function AllianceModule({ scope, executiveId }: AllianceModuleProps) {
   const [showEventForm, setShowEventForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
   const [drillInstitution, setDrillInstitution] = useState<Institution | null>(null);
+
+  // Auto-open create form based on URL action param
+  useEffect(() => {
+    if (initialAction !== "new") return;
+    if (initialTab === "visits") setShowVisitForm(true);
+    else if (initialTab === "tasks") setShowTaskForm(true);
+    else if (initialTab === "proposals") setShowProposalForm(true);
+    else if (initialTab === "events") setShowEventForm(true);
+    else if (initialTab === "expenses") setShowExpenseForm(true);
+    else if (initialTab === "institutions" && scope === "manager") setShowInstForm(true);
+  }, [initialAction, initialTab, scope]);
 
   // Force re-render after mutations
   const [version, setVersion] = useState(0);
