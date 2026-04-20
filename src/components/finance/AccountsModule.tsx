@@ -222,6 +222,9 @@ function DashboardTab({ onJump }: { onJump: (id: string) => void }) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <FinanceKpi label="Gross Billing" value={fmtINR(totalBilled)} hint="GST inclusive" tone="primary" icon={<FileText className="h-4 w-4" />} onClick={() => onJump("billing")} />
+        <FinanceKpi label="Net Revenue" value={fmtINR(totalBilled - gstOutput)} hint="Excl. GST" tone="success" icon={<TrendingUp className="h-4 w-4" />} onClick={() => onJump("revenue")} />
+        <FinanceKpi label="GST Collected" value={fmtINR(gstOutput)} hint="Output tax" tone="primary" icon={<BadgePercent className="h-4 w-4" />} onClick={() => onJump("gst")} />
         <FinanceKpi label="Vendor Payables" value={fmtINR(vendorPayables)} tone="warning" onClick={() => onJump("vendors")} />
         <FinanceKpi label="EMI Overdues" value={emiOverdue} hint="accounts" tone={emiOverdue > 0 ? "destructive" : "success"} onClick={() => onJump("emi")} />
         <FinanceKpi label="Cash Runway" value={`${runway} days`} tone={runway > 60 ? "success" : runway > 30 ? "warning" : "destructive"} />
