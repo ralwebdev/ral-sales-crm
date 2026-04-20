@@ -163,7 +163,7 @@ function load(): FinanceState {
     if (raw) return JSON.parse(raw);
   } catch {}
   const s = seed();
-  save(s);
+  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
   return s;
 }
 
