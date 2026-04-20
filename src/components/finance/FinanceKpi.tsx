@@ -5,9 +5,9 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface KpiProps {
   label: string;
-  value: string | number;
+  value: ReactNode;
   hint?: string;
-  trend?: number;          // +/- percent
+  trend?: number;
   tone?: "default" | "success" | "warning" | "destructive" | "primary";
   icon?: ReactNode;
   onClick?: () => void;
