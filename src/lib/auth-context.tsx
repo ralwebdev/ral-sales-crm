@@ -15,6 +15,9 @@ const allUsers: User[] = [
   { id: "ae1", name: "Sneha Roy", email: "sneha@redapple.com", password: "alliance123", role: "alliance_executive" },
   { id: "ae2", name: "Karan Mehta", email: "karan@redapple.com", password: "alliance123", role: "alliance_executive" },
   { id: "ae3", name: "Pooja Nair", email: "pooja@redapple.com", password: "alliance123", role: "alliance_executive" },
+  // Accounts / Finance
+  { id: "acm1", name: "Neha Gupta", email: "neha@redapple.com", password: "accounts123", role: "accounts_manager" },
+  { id: "ace1", name: "Arjun Patel", email: "arjun@redapple.com", password: "accounts123", role: "accounts_executive" },
 ];
 
 interface AuthContextValue {
