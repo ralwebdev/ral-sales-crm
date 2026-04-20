@@ -64,18 +64,16 @@ export function ApprovalCenter() {
   const [filterType, setFilterType] = useState<string>("all");
   const [search, setSearch] = useState("");
 
-  const role = currentUser?.role;
-  const userId = currentUser?.id;
-  if (!role || !userId) return null;
-
+  const role = currentUser?.role ?? "alliance_executive";
+  const userId = currentUser?.id ?? "";
   const isExec = role === "alliance_executive";
   const isMgr = role === "alliance_manager";
   const isAdmin = role === "admin" || role === "owner";
 
   const userLabel = (id?: string) => allUsers.find((u) => u.id === id)?.name ?? id ?? "—";
 
-  const all = useMemo(() => { void version; return approvalsForActor(userId, role); }, [userId, role, version]);
-  const pending = useMemo(() => { void version; return pendingForRole(userId, role); }, [userId, role, version]);
+  const all = useMemo(() => { void version; return userId ? approvalsForActor(userId, role) : []; }, [userId, role, version]);
+  const pending = useMemo(() => { void version; return userId ? pendingForRole(userId, role) : []; }, [userId, role, version]);
   const logs = useMemo(() => { void version; return approvalStore.logs(); }, [version]);
 
   // Apply filters/search
