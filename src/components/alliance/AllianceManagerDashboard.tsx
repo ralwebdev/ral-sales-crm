@@ -271,7 +271,10 @@ export function AllianceManagerDashboard() {
       {/* Pipeline + Leaderboard */}
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-xl bg-card p-5 shadow-card">
-          <h4 className="text-sm font-semibold text-card-foreground mb-1">Pipeline Funnel</h4>
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="text-sm font-semibold text-card-foreground">Pipeline Funnel</h4>
+            <span className="text-[10px] text-muted-foreground italic">Click a stage to drill down</span>
+          </div>
           <p className="text-xs text-muted-foreground mb-3">See conversion drop-offs by stage.</p>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={funnelData} layout="vertical">
@@ -279,7 +282,13 @@ export function AllianceManagerDashboard() {
               <XAxis type="number" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} width={110} />
               <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
-              <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+              <Bar
+                dataKey="value"
+                fill="hsl(var(--primary))"
+                radius={[0, 4, 4, 0]}
+                cursor="pointer"
+                onClick={(d: { name?: string }) => d?.name && navigate(`/alliances?tab=institutions&stage=${encodeURIComponent(d.name)}`)}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
