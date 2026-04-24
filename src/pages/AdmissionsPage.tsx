@@ -639,6 +639,9 @@ export default function AdmissionsPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Auto-PI prompt — opens after admission confirmation */}
+      <AutoPiPromptDialog admission={autoPiAdm} open={!!autoPiAdm} onClose={() => setAutoPiAdm(null)} />
     </div>
   );
 }
