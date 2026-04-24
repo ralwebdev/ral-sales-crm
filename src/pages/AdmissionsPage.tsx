@@ -130,6 +130,60 @@ function SuggestionCard({ admission }: { admission: Admission | null }) {
           </span>
         </div>
       )}
+
+      {/* TI Suggestion Banner — non-blocking */}
+      {lastPayment && (
+        <TiSuggestionBanner admission={admission} totalPaid={totalPaid} remaining={remaining} />
+      )}
+    </div>
+  );
+}
+
+/** Non-blocking banner suggesting Tax Invoice generation after a payment is logged. */
+function TiSuggestionBanner({
+  admission,
+  totalPaid,
+  remaining,
+}: {
+  admission: Admission;
+  totalPaid: number;
+  remaining: number;
+}) {
+  const navigate = useNavigate();
+  const fullyPaid = remaining <= 0.5;
+  const linkedPi = findOpenPiForStudent(admission.studentName);
+
+  const message = fullyPaid
+    ? "Payment complete. Generate Tax Invoice now."
+    : "Partial payment received. Generate TI for received amount or wait per policy.";
+
+  const handleGenerate = () => {
+    toast.info("Opening billing — Create Tax Invoice", {
+      description: `Recipient: ${admission.studentName} · Amount: ${fmtINR(totalPaid)}`,
+    });
+    navigate("/accounts");
+  };
+
+  return (
+    <div className="rounded-lg border border-success/30 bg-success/5 p-3 space-y-2">
+      <div className="flex items-start gap-2">
+        <Receipt className="h-4 w-4 text-success shrink-0 mt-0.5" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="h-3 w-3 text-success" />
+            <p className="text-xs font-semibold text-success">TI Suggested</p>
+          </div>
+          <p className="text-[11px] text-foreground mt-0.5">{message}</p>
+          {linkedPi && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1">
+              <FileText className="h-3 w-3" /> Linked PI: <span className="font-medium">{linkedPi.invoiceNo}</span>
+            </p>
+          )}
+        </div>
+      </div>
+      <UiButton size="sm" variant="outline" className="w-full h-7 text-xs border-success/40 text-success hover:bg-success/10" onClick={handleGenerate}>
+        Generate Tax Invoice
+      </UiButton>
     </div>
   );
 }
