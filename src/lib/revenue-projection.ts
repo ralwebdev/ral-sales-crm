@@ -87,12 +87,16 @@ function buildEmptyMonths(horizon: number): MonthBucket[] {
   return out;
 }
 
-// ────────────────────────────── Layer 1: Collected ──────────────────────────────
-// "Confirmed collections" for the current month = payments already received this month.
-// Future months get 0 here — the forecast layers fill them.
-function applyConfirmedCollections(buckets: MonthBucket[], payments: Payment[]) {
+// ────────────────────────────── Layer 1: Collected (TI only) ──────────────────────────────
+// "Confirmed collections" = payments received against TI (Tax Invoices) only.
+// PI payments — if any leak in via legacy data — are excluded so collected revenue
+// is never double-counted with PI receivables.
+function applyConfirmedCollections(buckets: MonthBucket[], payments: Payment[], invoices: Invoice[]) {
+  const tiIds = new Set(invoices.filter(i => i.invoiceType === "TI").map(i => i.id));
   const byMonth = new Map<string, number>();
   payments.forEach(p => {
+    // Only count payments linked to a TI (or unlinked legacy payments treated as TI-equivalent).
+    if (p.invoiceId && !tiIds.has(p.invoiceId)) return;
     const k = monthKey(new Date(p.paidOn));
     byMonth.set(k, (byMonth.get(k) || 0) + p.amount);
   });
@@ -101,11 +105,15 @@ function applyConfirmedCollections(buckets: MonthBucket[], payments: Payment[]) 
   });
 }
 
-// ────────────────────────────── Layer 2: Scheduled EMIs ──────────────────────────────
-function applyScheduledEmis(buckets: MonthBucket[], emis: EmiSchedule[], recoveryRate: number) {
+// ────────────────────────────── Layer 2: Scheduled EMIs (TI-backed only) ──────────────────────────────
+// Open PI receivables flow through the dedicated PI receivables layer (computePiReceivableSchedule),
+// not via EMIs. Scheduled EMIs only count when the underlying invoice is a TI.
+function applyScheduledEmis(buckets: MonthBucket[], emis: EmiSchedule[], invoices: Invoice[], recoveryRate: number) {
+  const tiIds = new Set(invoices.filter(i => i.invoiceType === "TI").map(i => i.id));
   const byMonth = new Map<string, number>();
   emis.forEach(e => {
     if (e.status === "Paid") return;
+    if (e.invoiceId && !tiIds.has(e.invoiceId)) return;
     const k = monthKey(new Date(e.dueDate));
     byMonth.set(k, (byMonth.get(k) || 0) + e.amount * recoveryRate);
   });
@@ -224,8 +232,8 @@ export function projectMonthly(input: ProjectionInput): MonthBucket[] {
   const continuation = input.continuation ?? DEFAULT_CONTINUATION;
 
   const buckets = buildEmptyMonths(horizon);
-  applyConfirmedCollections(buckets, input.payments);
-  applyScheduledEmis(buckets, input.emiSchedules, scenario.emiRecoveryRate);
+  applyConfirmedCollections(buckets, input.payments, input.invoices);
+  applyScheduledEmis(buckets, input.emiSchedules, input.invoices, scenario.emiRecoveryRate);
   applyContinuation(buckets, input.invoices, continuation);
 
   const trend = computeAdmissionTrend(input.invoices, 6);
