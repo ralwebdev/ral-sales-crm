@@ -21,18 +21,32 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import {
   Mail, Lock, AlertCircle, Eye, EyeOff, ShieldCheck, ArrowRight, Check,
   Briefcase, Crown, Wallet, Settings2, WifiOff, Loader2, KeyRound, ShieldAlert,
+  Phone, HeartHandshake, Megaphone, Headphones, Building2, GraduationCap,
 } from "lucide-react";
 import { toast } from "sonner";
 
 /* ───────── Roles for the selector ───────── */
 
-type ChipRole = "accounts_executive" | "accounts_manager" | "owner" | "admin";
+type ChipRole =
+  | "accounts_executive" | "accounts_manager" | "owner" | "admin"
+  | "telecaller" | "telecalling_manager" | "counselor" | "marketing_manager"
+  | "alliance_manager" | "alliance_executive";
 
-const ROLE_CHIPS: { value: ChipRole; label: string; icon: typeof Crown; subtitle: string }[] = [
-  { value: "accounts_executive", label: "Accounts Executive", icon: Wallet, subtitle: "Daily billing, collections support and invoice operations." },
-  { value: "accounts_manager", label: "Accounts Manager", icon: Briefcase, subtitle: "Billing, reconciliation and finance controls." },
-  { value: "owner", label: "Owner", icon: Crown, subtitle: "Strategic revenue, approvals and executive visibility." },
-  { value: "admin", label: "Admin", icon: Settings2, subtitle: "Operations, verification and workflow controls." },
+type RoleTier = "premium" | "ops";
+
+const ROLE_CHIPS: { value: ChipRole; label: string; icon: typeof Crown; subtitle: string; tier: RoleTier }[] = [
+  // Premium tier — split-screen with branding & rotating trust messages
+  { value: "accounts_executive", label: "Accounts Executive", icon: Wallet, subtitle: "Daily billing, collections support and invoice operations.", tier: "premium" },
+  { value: "accounts_manager", label: "Accounts Manager", icon: Briefcase, subtitle: "Billing, reconciliation and finance controls.", tier: "premium" },
+  { value: "owner", label: "Owner", icon: Crown, subtitle: "Strategic revenue, approvals and executive visibility.", tier: "premium" },
+  { value: "admin", label: "Admin", icon: Settings2, subtitle: "Operations, verification and workflow controls.", tier: "premium" },
+  // Ops tier — compact single panel
+  { value: "telecaller", label: "Telecaller", icon: Phone, subtitle: "Call queue, lead follow-ups and conversion.", tier: "ops" },
+  { value: "telecalling_manager", label: "Telecalling Manager", icon: Headphones, subtitle: "Team performance, call quality and lead routing.", tier: "ops" },
+  { value: "counselor", label: "Counselor", icon: GraduationCap, subtitle: "Walk-ins, counseling outcomes and admissions.", tier: "ops" },
+  { value: "marketing_manager", label: "Marketing Manager", icon: Megaphone, subtitle: "Campaigns, lead sources and ROAS.", tier: "ops" },
+  { value: "alliance_manager", label: "Alliance Manager", icon: Building2, subtitle: "Institutional partnerships and program launches.", tier: "ops" },
+  { value: "alliance_executive", label: "Alliance Executive", icon: HeartHandshake, subtitle: "On-ground alliance visits and follow-ups.", tier: "ops" },
 ];
 
 /* ───────── Lockout helpers (localStorage) ───────── */
