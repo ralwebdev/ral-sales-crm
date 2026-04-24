@@ -615,9 +615,6 @@ function InvoiceFormDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <div><Label>Recipient Name</Label><Input value={f.customerName} onChange={e => setF({ ...f, customerName: e.target.value })} /></div>
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div><Label>Customer Name</Label><Input value={f.customerName} onChange={e => setF({ ...f, customerName: e.target.value })} /></div>
           <div><Label>Type</Label>
             <Select value={f.customerType} onValueChange={(v: any) => setF({ ...f, customerType: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
