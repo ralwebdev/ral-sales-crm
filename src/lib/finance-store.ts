@@ -247,11 +247,40 @@ function nextNo(kind: keyof FinanceState["counters"], prefix: string): string {
   const n = state.counters[kind] + 1;
   state.counters[kind] = n;
   const d = new Date();
+  // PI/TI use yearly sequence: PI-2026-0001
+  if (kind === "pi" || kind === "ti") {
+    return `${prefix}-${d.getFullYear()}-${pad(n)}`;
+  }
   return `${prefix}-${d.getFullYear()}${pad(d.getMonth() + 1, 2)}-${pad(n)}`;
 }
 
 /* ───────── Invoices ───────── */
-export function createInvoice(input: Omit<Invoice, "id" | "invoiceNo" | "createdAt" | "cgst" | "sgst" | "igst" | "total" | "amountPaid" | "status">, by: string): Invoice {
+export function createInvoice(
+  input: Omit<Invoice, "id" | "invoiceNo" | "createdAt" | "cgst" | "sgst" | "igst" | "total" | "amountPaid" | "status">,
+  by: string,
+): Invoice {
+  const taxable = input.subtotal - input.discount;
+  const gst = input.gstType === "Exempt" ? 0 : taxable * input.gstRate / 100;
+  const type: InvoiceType = input.invoiceType ?? "PI";
+  const counterKind = type === "TI" ? "ti" : "pi";
+  const prefix = type === "TI" ? "TI" : "PI";
+  const inv: Invoice = {
+    ...input,
+    invoiceType: type,
+    id: uid("inv"),
+    invoiceNo: nextNo(counterKind, prefix),
+    cgst: gst / 2, sgst: gst / 2, igst: 0,
+    total: taxable + gst,
+    amountPaid: 0,
+    status: type === "TI" ? "Sent" : "Sent",
+    createdBy: by,
+    createdAt: todayISO(),
+  };
+  state.invoices.unshift(inv);
+  log("Invoice", inv.id, `created ${type}`, by);
+  save({ ...state });
+  return inv;
+}
   const taxable = input.subtotal - input.discount;
   const gst = input.gstType === "Exempt" ? 0 : taxable * input.gstRate / 100;
   const inv: Invoice = {
