@@ -33,6 +33,58 @@ export type CollectionStatus =
   | "Ready For Invoice"
   | "Invoice Generated";
 
+/** Who logged the collection — counselor or admin (direct). */
+export type CollectorRole = "counselor" | "admin";
+
+/** Invoice request lifecycle (Counselor → Admin → Accounts → Issued). */
+export type InvoiceRequestType = "PI" | "TI" | "none";
+export type InvoiceRequestStatus =
+  | "none"
+  | "awaiting_admin_review"
+  | "awaiting_accounts"
+  | "draft_prepared"
+  | "on_hold"
+  | "clarification_requested"
+  | "rejected"
+  | "issued";
+
+export interface InvoiceRequest {
+  type: InvoiceRequestType;
+  status: InvoiceRequestStatus;
+  requestedById?: string;
+  requestedByName?: string;
+  requestedByRole?: string;
+  requestedAt?: string;
+  /** Admin review */
+  adminReviewedById?: string;
+  adminReviewedByName?: string;
+  adminReviewedAt?: string;
+  adminRemarks?: string;
+  /** Accounts handling */
+  preparedById?: string;
+  preparedByName?: string;
+  preparedAt?: string;
+  issuedById?: string;
+  issuedByName?: string;
+  issuedAt?: string;
+  invoiceId?: string;
+  invoiceNo?: string;
+  /** Hold / clarification / rejection */
+  holdReason?: string;
+  clarificationQuestion?: string;
+  clarificationAnswer?: string;
+  rejectionReason?: string;
+}
+
+export interface CollectionAttachment {
+  id: string;
+  kind: "payment_screenshot" | "deposit_slip" | "student_note";
+  name: string;
+  /** base64 data URL — fine for the localStorage demo */
+  dataUrl?: string;
+  uploadedAt: string;
+}
+
 export const COLLECTION_REASONS: { value: CollectionReason; label: string }[] = [
   { value: "admission_fee", label: "Admission Fee" },
   { value: "registration_fee", label: "Registration Fee" },
@@ -70,14 +122,29 @@ export interface Collection {
   receiptRef: string; // human-readable reference, e.g. RC-2026-0001
   studentId: string;
   studentName: string;
+  studentMobile?: string;
   courseName: string;
+  branch?: string;
   amount: number;
   mode: CollectionMode;
   reason: CollectionReason;
   collectedAt: string;
   collectedById: string;
   collectedByName: string;
+  collectorRole: CollectorRole;
   remarks?: string;
+
+  /** Mode-conditional reference data captured at collection time. */
+  txnId?: string;
+  bankName?: string;
+  chequeNumber?: string;
+  chequeDate?: string;
+
+  /** Optional file attachments (base64 in localStorage). */
+  attachments?: CollectionAttachment[];
+
+  /** Invoice request workflow (PI/TI/none). */
+  invoiceRequest?: InvoiceRequest;
 
   /** Optional reference to an EMI schedule when reason = emi_payment / emi_late_fine */
   emiId?: string;
