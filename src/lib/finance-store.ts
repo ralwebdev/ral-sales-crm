@@ -17,7 +17,7 @@ interface FinanceState {
   budgets: Budget[];
   cashflow: CashFlowEntry[];
   logs: FinanceLog[];
-  counters: { inv: number; rcpt: number; exp: number; bill: number };
+  counters: { inv: number; rcpt: number; exp: number; bill: number; pi: number; ti: number };
 }
 
 const uid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
@@ -153,7 +153,7 @@ function seed(): FinanceState {
   return {
     invoices, payments, emiSchedules, expenses, vendors, vendorBills, budgets, cashflow,
     logs: [],
-    counters: { inv: invoices.length, rcpt: payments.length, exp: expenses.length, bill: vendorBills.length },
+    counters: { inv: invoices.length, rcpt: payments.length, exp: expenses.length, bill: vendorBills.length, pi: 0, ti: 0 },
   };
 }
 
