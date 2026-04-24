@@ -197,12 +197,14 @@ function seed(): Collection[] {
     studentId: "s_seed",
     studentName: "Seed Student",
     courseName: "UI/UX Design",
+    branch: "Kolkata - Park Street",
     amount: 5000,
     mode: "cash",
     reason: "admission_fee",
     collectedAt: daysAgo(0),
     collectedById: "u5",
     collectedByName: "Manjari Chakraborty",
+    collectorRole: "counselor",
     status: "Collected",
     audit: [],
     createdAt: daysAgo(0),
@@ -256,12 +258,14 @@ function pushAudit(c: Collection, entry: Omit<CollectionAuditEntry, "id" | "at">
   ];
 }
 
-/* ───────── Counselor actions ───────── */
+/* ───────── Counselor / Admin: log collection ───────── */
 
 export interface LogCollectionInput {
   studentId: string;
   studentName: string;
+  studentMobile?: string;
   courseName: string;
+  branch?: string;
   amount: number;
   mode: CollectionMode;
   reason: CollectionReason;
@@ -269,29 +273,62 @@ export interface LogCollectionInput {
   emiId?: string;
   emiInstallmentNo?: number;
   lateFeeAmount?: number;
+  /** mode-conditional */
+  txnId?: string;
+  bankName?: string;
+  chequeNumber?: string;
+  chequeDate?: string;
+  attachments?: CollectionAttachment[];
+  /** Collector may simultaneously request a PI / TI to be issued. */
+  requestInvoiceType?: InvoiceRequestType; // "PI" | "TI" | "none"
 }
 
 export function logCollection(
   input: LogCollectionInput,
   by: { id: string; name: string; role: string },
 ): Collection {
+  const collectorRole: CollectorRole = by.role === "admin" ? "admin" : "counselor";
+  const reqType: InvoiceRequestType = input.requestInvoiceType ?? "none";
+  const invoiceRequest: InvoiceRequest | undefined = reqType === "none"
+    ? { type: "none", status: "none" }
+    : {
+        type: reqType,
+        // Counselor → goes through admin first; Admin → straight to accounts.
+        status: collectorRole === "admin" ? "awaiting_accounts" : "awaiting_admin_review",
+        requestedById: by.id,
+        requestedByName: by.name,
+        requestedByRole: by.role,
+        requestedAt: new Date().toISOString(),
+      };
+
+  const { requestInvoiceType, ...rest } = input;
+  void requestInvoiceType;
   const c: Collection = {
     id: uid("col"),
     receiptRef: `RC-${new Date().getFullYear()}-${String(state.length + 1).padStart(4, "0")}`,
-    ...input,
+    ...rest,
     collectedAt: new Date().toISOString(),
     collectedById: by.id,
     collectedByName: by.name,
+    collectorRole,
     status: "Collected",
+    invoiceRequest,
     audit: [],
     createdAt: new Date().toISOString(),
   };
   pushAudit(c, {
     byId: by.id, byName: by.name, byRole: by.role,
-    action: "Collection logged",
+    action: collectorRole === "admin" ? "Direct collection logged (admin)" : "Collection logged",
     toStatus: "Collected",
     remarks: input.remarks,
   });
+  if (invoiceRequest && invoiceRequest.type !== "none") {
+    pushAudit(c, {
+      byId: by.id, byName: by.name, byRole: by.role,
+      action: `Invoice request created (${invoiceRequest.type})`,
+      remarks: `Status: ${invoiceRequest.status.replace(/_/g, " ")}`,
+    });
+  }
   save([c, ...state]);
   return c;
 }
