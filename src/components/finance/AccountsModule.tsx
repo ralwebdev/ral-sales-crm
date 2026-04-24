@@ -47,10 +47,12 @@ import { computeBreakup, detectIntraState, validateGstInput, type GstInputMode }
 import { InvoiceEditDialog } from "./InvoiceEditDialog";
 import { getInvoiceEdits, subscribeInvoiceEdits, HIGH_VALUE_THRESHOLD, type InvoiceEditEntry } from "@/lib/invoice-edit-store";
 import { ProjectionsTab } from "./ProjectionsTab";
-import { computeEmiMetrics, computeStudentRisk } from "@/lib/revenue-projection";
+import { ReportsTab } from "./ReportsTab";
+import { computeEmiMetrics, computeStudentRisk, computePiTiSplit, computePiTiMonthlyTrend } from "@/lib/revenue-projection";
 import { PiToTiConvertDialog } from "./PiToTiConvertDialog";
 import { getPiTiMappings, subscribePiTi, type PiTiMapping } from "@/lib/pi-ti-store";
 import { piOpenBalance, piConvertedAmount } from "@/lib/finance-store";
+import { scanPiDueAlerts } from "@/lib/pi-ti-notifications";
 import { ArrowRight } from "lucide-react";
 
 const CHART_COLORS = ["hsl(var(--primary))", "#1A1A1A", "#10b981", "#f59e0b", "#6366f1", "#ec4899", "#0ea5e9"];
@@ -92,6 +94,7 @@ const ALL_TABS: { id: string; label: string; roles: RoleScope[] }[] = [
   { id: "profit", label: "Profitability", roles: ["owner", "manager"] },
   { id: "cashflow", label: "Cash Flow", roles: ["owner"] },
   { id: "gst", label: "GST", roles: ["owner", "manager"] },
+  { id: "reports", label: "Reports", roles: ["owner", "manager"] },
   { id: "exports", label: "Exports", roles: ["owner", "manager"] },
 ];
 
