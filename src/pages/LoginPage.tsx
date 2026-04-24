@@ -324,34 +324,68 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Role chips */}
-          <div className="space-y-2 animate-fade-up">
+          {/* Role chips — grouped by tier */}
+          <div className="space-y-3 animate-fade-up">
             <Label className="text-xs text-muted-foreground">Select Access Role</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {ROLE_CHIPS.map(r => {
-                const Icon = r.icon;
-                const active = chipRole === r.value;
-                return (
-                  <button
-                    key={r.value}
-                    type="button"
-                    onClick={() => setChipRole(r.value)}
-                    aria-pressed={active}
-                    className={`group relative rounded-lg border px-3 py-2.5 text-left transition-all duration-200 ${
-                      active
-                        ? "border-primary bg-primary/5 shadow-card"
-                        : "border-border bg-card hover:border-primary/40 hover:bg-accent"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className={`h-3.5 w-3.5 transition-colors ${active ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`} />
-                      <span className={`text-xs font-medium ${active ? "text-foreground" : "text-foreground/80"}`}>{r.label}</span>
-                    </div>
-                    {active && <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary" />}
-                  </button>
-                );
-              })}
+
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70">Finance & Leadership</p>
+              <div className="grid grid-cols-2 gap-2">
+                {ROLE_CHIPS.filter(r => r.tier === "premium").map(r => {
+                  const Icon = r.icon;
+                  const active = chipRole === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      type="button"
+                      onClick={() => setChipRole(r.value)}
+                      aria-pressed={active}
+                      className={`group relative rounded-lg border px-3 py-2.5 text-left transition-all duration-200 ${
+                        active
+                          ? "border-primary bg-primary/5 shadow-card"
+                          : "border-border bg-card hover:border-primary/40 hover:bg-accent"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className={`h-3.5 w-3.5 transition-colors ${active ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`} />
+                        <span className={`text-xs font-medium ${active ? "text-foreground" : "text-foreground/80"}`}>{r.label}</span>
+                      </div>
+                      {active && <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70">Operations & Sales</p>
+              <div className="grid grid-cols-2 gap-2">
+                {ROLE_CHIPS.filter(r => r.tier === "ops").map(r => {
+                  const Icon = r.icon;
+                  const active = chipRole === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      type="button"
+                      onClick={() => setChipRole(r.value)}
+                      aria-pressed={active}
+                      className={`group relative rounded-lg border px-3 py-2 text-left transition-all duration-200 ${
+                        active
+                          ? "border-primary bg-primary/5 shadow-card"
+                          : "border-border bg-card hover:border-primary/40 hover:bg-accent"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className={`h-3.5 w-3.5 transition-colors ${active ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`} />
+                        <span className={`text-[11px] font-medium ${active ? "text-foreground" : "text-foreground/80"}`}>{r.label}</span>
+                      </div>
+                      {active && <div className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <p key={chipRole} className="text-[11px] text-muted-foreground animate-fade-in-soft">
               {activeChip.subtitle}
             </p>
