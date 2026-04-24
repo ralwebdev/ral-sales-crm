@@ -1,6 +1,6 @@
 import {
   Invoice, Payment, EmiSchedule, Expense, Vendor, VendorBill,
-  Budget, CashFlowEntry, FinanceLog, ExpenseCategory, PaymentMode,
+  Budget, CashFlowEntry, FinanceLog, ExpenseCategory, PaymentMode, InvoiceType,
 } from "./finance-types";
 
 const KEY = "ral_finance_v1";
