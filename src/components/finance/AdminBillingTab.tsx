@@ -43,7 +43,6 @@ import {
   type Collection,
 } from "@/lib/collection-store";
 import { LogCollectionDialog } from "@/components/counseling/LogCollectionDialog";
-import { mockUsers } from "@/lib/mock-data";
 
 const fmt = (n: number) => "₹" + n.toLocaleString("en-IN");
 const fmtDateTime = (iso?: string) =>
