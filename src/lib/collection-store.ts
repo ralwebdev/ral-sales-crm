@@ -506,3 +506,222 @@ export function getAllAuditEntries(): (CollectionAuditEntry & { collectionId: st
     })),
   );
 }
+
+/* ═══════════════════════════════════════════════════════════════
+ * Invoice-request workflow (Counselor → Admin → Accounts → Issued)
+ * ═══════════════════════════════════════════════════════════════ */
+
+export type ActorContext = { id: string; name: string; role: string };
+
+function ensureRequest(c: Collection): InvoiceRequest {
+  if (!c.invoiceRequest) c.invoiceRequest = { type: "none", status: "none" };
+  return c.invoiceRequest;
+}
+
+/** Counselor or Admin attaches an invoice request after the fact. */
+export function requestInvoice(
+  id: string,
+  type: Exclude<InvoiceRequestType, "none">,
+  by: ActorContext,
+): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c) return null;
+  const req = ensureRequest(c);
+  if (req.type !== "none" && req.status !== "rejected" && req.status !== "issued") return c;
+  req.type = type;
+  req.status = by.role === "admin" ? "awaiting_accounts" : "awaiting_admin_review";
+  req.requestedById = by.id;
+  req.requestedByName = by.name;
+  req.requestedByRole = by.role;
+  req.requestedAt = new Date().toISOString();
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: `Invoice request created (${type})`,
+    remarks: `Status: ${req.status.replace(/_/g, " ")}`,
+  });
+  save([...state]);
+  return c;
+}
+
+/** Admin approves a counselor's request and forwards it to Accounts. */
+export function adminApproveInvoiceRequest(id: string, by: ActorContext, remarks?: string): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  const req = c.invoiceRequest;
+  if (req.status !== "awaiting_admin_review") return null;
+  req.status = "awaiting_accounts";
+  req.adminReviewedById = by.id;
+  req.adminReviewedByName = by.name;
+  req.adminReviewedAt = new Date().toISOString();
+  req.adminRemarks = remarks;
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Admin approved invoice request",
+    remarks,
+  });
+  save([...state]);
+  return c;
+}
+
+export function adminRejectInvoiceRequest(id: string, reason: string, by: ActorContext): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  const req = c.invoiceRequest;
+  req.status = "rejected";
+  req.rejectionReason = reason;
+  req.adminReviewedById = by.id;
+  req.adminReviewedByName = by.name;
+  req.adminReviewedAt = new Date().toISOString();
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Admin rejected invoice request",
+    remarks: reason,
+  });
+  save([...state]);
+  return c;
+}
+
+/** Accounts Executive prepares a draft (Manager / Owner will issue). */
+export function accountsPrepareDraft(id: string, by: ActorContext): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  const req = c.invoiceRequest;
+  if (req.status !== "awaiting_accounts") return null;
+  req.status = "draft_prepared";
+  req.preparedById = by.id;
+  req.preparedByName = by.name;
+  req.preparedAt = new Date().toISOString();
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Accounts prepared draft",
+  });
+  save([...state]);
+  return c;
+}
+
+/** Accounts Manager / Owner issues the invoice (links to TI/PI created elsewhere). */
+export function accountsIssueInvoice(
+  id: string,
+  invoiceId: string,
+  invoiceNo: string,
+  by: ActorContext,
+): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  const req = c.invoiceRequest;
+  req.status = "issued";
+  req.invoiceId = invoiceId;
+  req.invoiceNo = invoiceNo;
+  req.issuedById = by.id;
+  req.issuedByName = by.name;
+  req.issuedAt = new Date().toISOString();
+  // Mirror onto the legacy TI fields if it's a TI.
+  if (req.type === "TI") {
+    c.invoiceId = invoiceId;
+    c.invoiceNo = invoiceNo;
+    c.invoicedById = by.id;
+    c.invoicedByName = by.name;
+    c.invoicedAt = new Date().toISOString();
+    if (c.status === "Verified" || c.status === "Ready For Invoice") c.status = "Invoice Generated";
+  }
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: `Invoice issued (${req.type} ${invoiceNo})`,
+  });
+  save([...state]);
+  return c;
+}
+
+export function accountsHoldRequest(id: string, reason: string, by: ActorContext): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  c.invoiceRequest.status = "on_hold";
+  c.invoiceRequest.holdReason = reason;
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Accounts placed request on hold",
+    remarks: reason,
+  });
+  save([...state]);
+  return c;
+}
+
+export function accountsRequestClarification(id: string, question: string, by: ActorContext): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  c.invoiceRequest.status = "clarification_requested";
+  c.invoiceRequest.clarificationQuestion = question;
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Accounts requested clarification",
+    remarks: question,
+  });
+  save([...state]);
+  return c;
+}
+
+export function accountsRejectRequest(id: string, reason: string, by: ActorContext): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  c.invoiceRequest.status = "rejected";
+  c.invoiceRequest.rejectionReason = reason;
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Accounts rejected request",
+    remarks: reason,
+  });
+  save([...state]);
+  return c;
+}
+
+/** Counselor / collector answers a clarification — moves back to awaiting_accounts. */
+export function answerClarification(id: string, answer: string, by: ActorContext): Collection | null {
+  const c = state.find(x => x.id === id);
+  if (!c?.invoiceRequest) return null;
+  if (c.invoiceRequest.status !== "clarification_requested") return null;
+  c.invoiceRequest.clarificationAnswer = answer;
+  c.invoiceRequest.status = "awaiting_accounts";
+  pushAudit(c, {
+    byId: by.id, byName: by.name, byRole: by.role,
+    action: "Clarification provided",
+    remarks: answer,
+  });
+  save([...state]);
+  return c;
+}
+
+/* ───────── Selectors for the new workflow ───────── */
+
+export function getRequestsAwaitingAdmin() {
+  return state.filter(c => c.invoiceRequest?.status === "awaiting_admin_review");
+}
+export function getRequestsAwaitingAccounts() {
+  return state.filter(c => c.invoiceRequest?.status === "awaiting_accounts" || c.invoiceRequest?.status === "draft_prepared");
+}
+export function getRequestsOnHoldOrClarification() {
+  return state.filter(c => c.invoiceRequest?.status === "on_hold" || c.invoiceRequest?.status === "clarification_requested");
+}
+export function getRequestsRejected() {
+  return state.filter(c => c.invoiceRequest?.status === "rejected");
+}
+export function getCollectionsByAdminToday() {
+  const k = new Date().toDateString();
+  return state.filter(c => c.collectorRole === "admin" && new Date(c.collectedAt).toDateString() === k);
+}
+export function getRequestsAwaitingAdminFor(counselorId: string) {
+  return getRequestsAwaitingAdmin().filter(c => c.collectedById === counselorId);
+}
+/** Requests that the given user originally created and that have been issued. */
+export function getRequestsIssuedByMe(userId: string) {
+  return state.filter(c => c.invoiceRequest?.requestedById === userId && c.invoiceRequest?.status === "issued");
+}
+/** Requests > N hours old still pending verification or accounts action. */
+export function getStalePendingRequests(hours = 6) {
+  const cutoff = Date.now() - hours * 3600 * 1000;
+  return state.filter(c => {
+    const r = c.invoiceRequest;
+    if (!r) return false;
+    if (!["awaiting_admin_review", "awaiting_accounts"].includes(r.status)) return false;
+    return r.requestedAt ? new Date(r.requestedAt).getTime() < cutoff : false;
+  });
+}
