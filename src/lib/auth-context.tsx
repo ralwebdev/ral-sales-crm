@@ -31,11 +31,11 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-import { db } from "./db";
+import { session, SESSION_KEYS } from "./db";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const parsed = db.getSync<User>("crm_current_user");
+    const parsed = session.get<User>(SESSION_KEYS.currentUser);
     if (parsed) {
       return allUsers.find((u) => u.id === parsed.id) || null;
     }
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user = allUsers.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
     if (!user) return { success: false, error: "Invalid credentials. Please check email or password." };
     setCurrentUser(user);
-    db.saveSync("crm_current_user", user);
+    session.set(SESSION_KEYS.currentUser, user);
     return { success: true };
   }, []);
 
@@ -55,13 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user = allUsers.find((u) => u.id === userId);
     if (user) {
       setCurrentUser(user);
-      db.saveSync("crm_current_user", user);
+      session.set(SESSION_KEYS.currentUser, user);
     }
   }, []);
 
   const logout = useCallback(() => {
     setCurrentUser(null);
-    db.removeSync("crm_current_user");
+    session.remove(SESSION_KEYS.currentUser);
   }, []);
 
   return (

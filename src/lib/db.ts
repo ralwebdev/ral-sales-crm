@@ -6,6 +6,37 @@
 
 const STORAGE = typeof window !== "undefined" ? window.localStorage : null;
 
+/**
+ * Persistence keys
+ */
+export const SESSION_KEYS = {
+  currentUser: "crm_current_user",
+} as const;
+
+/**
+ * Session storage (Always uses localStorage)
+ */
+export const session = {
+  get<T>(key: string): T | null {
+    if (!STORAGE) return null;
+    try {
+      const val = STORAGE.getItem(key);
+      return val ? JSON.parse(val) as T : null;
+    } catch { return null; }
+  },
+  set<T>(key: string, data: T): void {
+    if (!STORAGE) return;
+    STORAGE.setItem(key, JSON.stringify(data));
+  },
+  remove(key: string): void {
+    if (!STORAGE) return;
+    STORAGE.removeItem(key);
+  }
+};
+
+/**
+ * Application Database (Wraps storage, ready for async migration)
+ */
 export const db = {
   /**
    * Get an item from the database (Async).
@@ -75,15 +106,16 @@ export const db = {
   },
 
   /**
-   * Clear all items from the database except for specific preserved keys.
+   * Clear all items from the database except for login session keys.
    */
-  async clear(preservedKeys: string[] = ["crm_current_user"]): Promise<void> {
+  async clear(): Promise<void> {
     if (!STORAGE) return;
     try {
       const keysToRemove: string[] = [];
+      const preserved = Object.values(SESSION_KEYS);
       for (let i = 0; i < STORAGE.length; i++) {
         const key = STORAGE.key(i);
-        if (key && !preservedKeys.includes(key)) {
+        if (key && !preserved.includes(key as any)) {
           keysToRemove.push(key);
         }
       }
