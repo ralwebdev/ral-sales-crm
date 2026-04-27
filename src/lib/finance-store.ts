@@ -3,6 +3,8 @@ import {
   Budget, CashFlowEntry, FinanceLog, ExpenseCategory, PaymentMode, InvoiceType,
 } from "./finance-types";
 
+import { db } from "./db";
+
 const KEY = "ral_finance_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -33,32 +35,29 @@ function seed(): FinanceState {
 }
 
 function load(): FinanceState {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const parsed: FinanceState = JSON.parse(raw);
-      // Backward-compat: ensure counters has pi/ti
-      parsed.counters = { pi: 0, ti: 0, ...parsed.counters };
-      // Backfill invoiceType for legacy seeded invoices by status
-      let mutated = false;
-      parsed.invoices.forEach(i => {
-        if (!i.invoiceType) {
-          i.invoiceType = (i.status === "Draft" || i.status === "Sent") ? "PI" : "TI";
-          mutated = true;
-        }
-      });
-      if (mutated) {
-        try { localStorage.setItem(KEY, JSON.stringify(parsed)); } catch {}
+  const parsed = db.getSync<FinanceState>(KEY);
+  if (parsed) {
+    // Backward-compat: ensure counters has pi/ti
+    parsed.counters = { pi: 0, ti: 0, ...parsed.counters };
+    // Backfill invoiceType for legacy seeded invoices by status
+    let mutated = false;
+    parsed.invoices.forEach(i => {
+      if (!i.invoiceType) {
+        i.invoiceType = (i.status === "Draft" || i.status === "Sent") ? "PI" : "TI";
+        mutated = true;
       }
-      return parsed;
+    });
+    if (mutated) {
+      db.saveSync(KEY, parsed);
     }
-  } catch {}
+    return parsed;
+  }
   const s = seed();
   // First-time seed: backfill PI/TI by status
   s.invoices.forEach(i => {
     if (!i.invoiceType) i.invoiceType = (i.status === "Draft" || i.status === "Sent") ? "PI" : "TI";
   });
-  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
+  db.saveSync(KEY, s);
   return s;
 }
 
@@ -66,7 +65,7 @@ let state: FinanceState = typeof window !== "undefined" ? load() : seed();
 
 function save(s: FinanceState) {
   state = s;
-  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
+  db.saveSync(KEY, s);
   listeners.forEach(l => l());
 }
 

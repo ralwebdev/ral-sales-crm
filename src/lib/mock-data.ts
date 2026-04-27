@@ -63,7 +63,9 @@ export const mockAdmissions: Admission[] = [];
 // Add internship leads to the main leads array (cast is safe since Lead interface now supports programChannel)
 const allMockLeads: Lead[] = [...mockLeads, ...internshipLeadEntries as unknown as Lead[]];
 
-/* ═══════ LOCAL STORAGE HELPERS ═══════ */
+/* ═══════ DATABASE HELPERS ═══════ */
+import { db } from "./db";
+
 const STORAGE_KEYS = {
   campaigns: "crm_campaigns",
   leads: "crm_leads",
@@ -80,61 +82,50 @@ const STORAGE_KEYS = {
   schoolStudents: "crm_school_students",
 } as const;
 
-function getOrInit<T>(key: string, defaults: T[]): T[] {
-  const stored = localStorage.getItem(key);
-  if (stored) return JSON.parse(stored);
-  localStorage.setItem(key, JSON.stringify(defaults));
-  return defaults;
-}
-
-function save<T>(key: string, data: T[]) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
 export const store = {
-  getCampaigns: () => getOrInit(STORAGE_KEYS.campaigns, mockCampaigns),
-  saveCampaigns: (d: Campaign[]) => save(STORAGE_KEYS.campaigns, d),
+  getCampaigns: () => db.getSync(STORAGE_KEYS.campaigns, mockCampaigns) || [],
+  saveCampaigns: (d: Campaign[]) => db.saveSync(STORAGE_KEYS.campaigns, d),
 
-  getLeads: () => getOrInit(STORAGE_KEYS.leads, allMockLeads),
-  saveLeads: (d: Lead[]) => save(STORAGE_KEYS.leads, d),
+  getLeads: () => db.getSync(STORAGE_KEYS.leads, allMockLeads) || [],
+  saveLeads: (d: Lead[]) => db.saveSync(STORAGE_KEYS.leads, d),
 
-  getCallLogs: () => getOrInit(STORAGE_KEYS.callLogs, mockCallLogs),
-  saveCallLogs: (d: CallLog[]) => save(STORAGE_KEYS.callLogs, d),
+  getCallLogs: () => db.getSync(STORAGE_KEYS.callLogs, mockCallLogs) || [],
+  saveCallLogs: (d: CallLog[]) => db.saveSync(STORAGE_KEYS.callLogs, d),
 
-  getFollowUps: () => getOrInit(STORAGE_KEYS.followUps, mockFollowUps),
-  saveFollowUps: (d: FollowUp[]) => save(STORAGE_KEYS.followUps, d),
+  getFollowUps: () => db.getSync(STORAGE_KEYS.followUps, mockFollowUps) || [],
+  saveFollowUps: (d: FollowUp[]) => db.saveSync(STORAGE_KEYS.followUps, d),
 
-  getAdmissions: () => getOrInit(STORAGE_KEYS.admissions, mockAdmissions),
-  saveAdmissions: (d: Admission[]) => save(STORAGE_KEYS.admissions, d),
+  getAdmissions: () => db.getSync(STORAGE_KEYS.admissions, mockAdmissions) || [],
+  saveAdmissions: (d: Admission[]) => db.saveSync(STORAGE_KEYS.admissions, d),
 
-  getCourses: () => getOrInit(STORAGE_KEYS.courses, mockCourses),
-  saveCourses: (d: Course[]) => save(STORAGE_KEYS.courses, d),
+  getCourses: () => db.getSync(STORAGE_KEYS.courses, mockCourses) || [],
+  saveCourses: (d: Course[]) => db.saveSync(STORAGE_KEYS.courses, d),
 
   // ── Multi-Vertical Stores ──
-  getInternshipAdmissions: () => getOrInit(STORAGE_KEYS.internshipAdmissions, mockInternshipAdmissions),
-  saveInternshipAdmissions: (d: InternshipAdmission[]) => save(STORAGE_KEYS.internshipAdmissions, d),
+  getInternshipAdmissions: () => db.getSync(STORAGE_KEYS.internshipAdmissions, mockInternshipAdmissions) || [],
+  saveInternshipAdmissions: (d: InternshipAdmission[]) => db.saveSync(STORAGE_KEYS.internshipAdmissions, d),
 
-  getCollegeAccounts: () => getOrInit(STORAGE_KEYS.collegeAccounts, mockCollegeAccounts),
-  saveCollegeAccounts: (d: CollegeAccount[]) => save(STORAGE_KEYS.collegeAccounts, d),
+  getCollegeAccounts: () => db.getSync(STORAGE_KEYS.collegeAccounts, mockCollegeAccounts) || [],
+  saveCollegeAccounts: (d: CollegeAccount[]) => db.saveSync(STORAGE_KEYS.collegeAccounts, d),
 
-  getCollegePrograms: () => getOrInit(STORAGE_KEYS.collegePrograms, mockCollegePrograms),
-  saveCollegePrograms: (d: CollegeProgram[]) => save(STORAGE_KEYS.collegePrograms, d),
+  getCollegePrograms: () => db.getSync(STORAGE_KEYS.collegePrograms, mockCollegePrograms) || [],
+  saveCollegePrograms: (d: CollegeProgram[]) => db.saveSync(STORAGE_KEYS.collegePrograms, d),
 
-  getCollegeStudents: () => getOrInit(STORAGE_KEYS.collegeStudents, mockCollegeStudents),
-  saveCollegeStudents: (d: CollegeStudent[]) => save(STORAGE_KEYS.collegeStudents, d),
+  getCollegeStudents: () => db.getSync(STORAGE_KEYS.collegeStudents, mockCollegeStudents) || [],
+  saveCollegeStudents: (d: CollegeStudent[]) => db.saveSync(STORAGE_KEYS.collegeStudents, d),
 
-  getSchoolAccounts: () => getOrInit(STORAGE_KEYS.schoolAccounts, mockSchoolAccounts),
-  saveSchoolAccounts: (d: SchoolAccount[]) => save(STORAGE_KEYS.schoolAccounts, d),
+  getSchoolAccounts: () => db.getSync(STORAGE_KEYS.schoolAccounts, mockSchoolAccounts) || [],
+  saveSchoolAccounts: (d: SchoolAccount[]) => db.saveSync(STORAGE_KEYS.schoolAccounts, d),
 
-  getSchoolPrograms: () => getOrInit(STORAGE_KEYS.schoolPrograms, mockSchoolPrograms),
-  saveSchoolPrograms: (d: SchoolProgram[]) => save(STORAGE_KEYS.schoolPrograms, d),
+  getSchoolPrograms: () => db.getSync(STORAGE_KEYS.schoolPrograms, mockSchoolPrograms) || [],
+  saveSchoolPrograms: (d: SchoolProgram[]) => db.saveSync(STORAGE_KEYS.schoolPrograms, d),
 
-  getSchoolStudents: () => getOrInit(STORAGE_KEYS.schoolStudents, mockSchoolStudents),
-  saveSchoolStudents: (d: SchoolStudent[]) => save(STORAGE_KEYS.schoolStudents, d),
+  getSchoolStudents: () => db.getSync(STORAGE_KEYS.schoolStudents, mockSchoolStudents) || [],
+  saveSchoolStudents: (d: SchoolStudent[]) => db.saveSync(STORAGE_KEYS.schoolStudents, d),
 
   getUsers: () => mockUsers,
 
   resetAll: () => {
-    import("./utils").then(u => u.clearAllStorageExceptLogin());
+    db.clear();
   },
 };

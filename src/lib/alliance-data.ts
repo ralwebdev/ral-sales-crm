@@ -49,6 +49,8 @@ export const allianceEvents: AllianceEvent[] = [];
 export const allianceExpenses: AllianceExpense[] = [];
 
 // ── STORAGE ──
+import { db } from "./db";
+
 const KEYS = {
   institutions: "alliance_institutions",
   contacts: "alliance_contacts",
@@ -59,49 +61,37 @@ const KEYS = {
   expenses: "alliance_expenses",
 } as const;
 
-function load<T>(key: string, defaults: T[]): T[] {
-  const stored = localStorage.getItem(key);
-  if (stored) {
-    try { return JSON.parse(stored); } catch { /* fallthrough */ }
-  }
-  localStorage.setItem(key, JSON.stringify(defaults));
-  return defaults;
-}
-function persist<T>(key: string, data: T[]) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
 export const allianceStore = {
   // Institutions
-  getInstitutions: () => load(KEYS.institutions, allianceInstitutions),
-  saveInstitutions: (d: Institution[]) => persist(KEYS.institutions, d),
+  getInstitutions: () => db.getSync(KEYS.institutions, allianceInstitutions) || [],
+  saveInstitutions: (d: Institution[]) => db.saveSync(KEYS.institutions, d),
   // Contacts
-  getContacts: () => load(KEYS.contacts, allianceContacts),
-  saveContacts: (d: AllianceContact[]) => persist(KEYS.contacts, d),
+  getContacts: () => db.getSync(KEYS.contacts, allianceContacts) || [],
+  saveContacts: (d: AllianceContact[]) => db.saveSync(KEYS.contacts, d),
   // Visits
-  getVisits: () => load(KEYS.visits, allianceVisits),
-  saveVisits: (d: AllianceVisit[]) => persist(KEYS.visits, d),
+  getVisits: () => db.getSync(KEYS.visits, allianceVisits) || [],
+  saveVisits: (d: AllianceVisit[]) => db.saveSync(KEYS.visits, d),
   // Tasks (recompute Overdue on read)
   getTasks: (): AllianceTask[] => {
-    const data = load(KEYS.tasks, allianceTasks);
+    const data = db.getSync(KEYS.tasks, allianceTasks) || [];
     const todayStr = new Date().toISOString().split("T")[0];
     return data.map((t) => (t.status !== "Done" && t.dueDate < todayStr ? { ...t, status: "Overdue" as const } : t));
   },
-  saveTasks: (d: AllianceTask[]) => persist(KEYS.tasks, d),
+  saveTasks: (d: AllianceTask[]) => db.saveSync(KEYS.tasks, d),
   // Proposals
-  getProposals: () => load(KEYS.proposals, allianceProposals),
-  saveProposals: (d: AllianceProposal[]) => persist(KEYS.proposals, d),
+  getProposals: () => db.getSync(KEYS.proposals, allianceProposals) || [],
+  saveProposals: (d: AllianceProposal[]) => db.saveSync(KEYS.proposals, d),
   // Events
-  getEvents: () => load(KEYS.events, allianceEvents),
-  saveEvents: (d: AllianceEvent[]) => persist(KEYS.events, d),
+  getEvents: () => db.getSync(KEYS.events, allianceEvents) || [],
+  saveEvents: (d: AllianceEvent[]) => db.saveSync(KEYS.events, d),
   // Expenses
-  getExpenses: () => load(KEYS.expenses, allianceExpenses),
-  saveExpenses: (d: AllianceExpense[]) => persist(KEYS.expenses, d),
+  getExpenses: () => db.getSync(KEYS.expenses, allianceExpenses) || [],
+  saveExpenses: (d: AllianceExpense[]) => db.saveSync(KEYS.expenses, d),
   // Users
   getUsers: () => allianceUsers,
   // Reset
   resetAll: () => {
-    import("./utils").then(u => u.clearAllStorageExceptLogin());
+    db.clear();
   },
 };
 

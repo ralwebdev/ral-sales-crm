@@ -52,20 +52,13 @@ export interface ApprovalLog {
   timestamp: string;
 }
 
+import { db } from "./db";
+
 const KEYS = {
   approvals: "alliance_approvals",
   logs: "alliance_approval_logs",
 } as const;
 
-function load<T>(key: string, defaults: T[]): T[] {
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw) as T[];
-  } catch { /* noop */ }
-  localStorage.setItem(key, JSON.stringify(defaults));
-  return defaults;
-}
-function save<T>(key: string, data: T[]) { localStorage.setItem(key, JSON.stringify(data)); }
 const nowIso = () => new Date().toISOString();
 const todayIso = () => new Date().toISOString().split("T")[0];
 
@@ -98,10 +91,10 @@ function seedLogs(): ApprovalLog[] {
 
 // ── Store ──
 export const approvalStore = {
-  list: (): ApprovalRequest[] => load(KEYS.approvals, seedApprovals()),
-  saveAll: (d: ApprovalRequest[]) => save(KEYS.approvals, d),
-  logs: (): ApprovalLog[] => load(KEYS.logs, seedLogs()),
-  saveLogs: (d: ApprovalLog[]) => save(KEYS.logs, d),
+  list: (): ApprovalRequest[] => db.getSync(KEYS.approvals, seedApprovals()) || [],
+  saveAll: (d: ApprovalRequest[]) => db.saveSync(KEYS.approvals, d),
+  logs: (): ApprovalLog[] => db.getSync(KEYS.logs, seedLogs()) || [],
+  saveLogs: (d: ApprovalLog[]) => db.saveSync(KEYS.logs, d),
 
   /** Create a new approval routed to the right approver. Returns id. */
   submit(input: {
@@ -208,7 +201,7 @@ export const approvalStore = {
     approvalStore.saveLogs([log, ...logs]);
   },
 
-  reset: () => { localStorage.removeItem(KEYS.approvals); localStorage.removeItem(KEYS.logs); },
+  reset: () => { db.removeSync(KEYS.approvals); db.removeSync(KEYS.logs); },
 };
 
 // ── Scoped queries ──

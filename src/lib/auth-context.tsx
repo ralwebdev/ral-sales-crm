@@ -31,15 +31,14 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+import { db } from "./db";
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    try {
-      const stored = localStorage.getItem("crm_current_user");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return allUsers.find((u) => u.id === parsed.id) || null;
-      }
-    } catch {}
+    const parsed = db.getSync<User>("crm_current_user");
+    if (parsed) {
+      return allUsers.find((u) => u.id === parsed.id) || null;
+    }
     return null;
   });
 
@@ -48,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user = allUsers.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
     if (!user) return { success: false, error: "Invalid credentials. Please check email or password." };
     setCurrentUser(user);
-    localStorage.setItem("crm_current_user", JSON.stringify(user));
+    db.saveSync("crm_current_user", user);
     return { success: true };
   }, []);
 
@@ -56,13 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user = allUsers.find((u) => u.id === userId);
     if (user) {
       setCurrentUser(user);
-      localStorage.setItem("crm_current_user", JSON.stringify(user));
+      db.saveSync("crm_current_user", user);
     }
   }, []);
 
   const logout = useCallback(() => {
     setCurrentUser(null);
-    localStorage.removeItem("crm_current_user");
+    db.removeSync("crm_current_user");
   }, []);
 
   return (

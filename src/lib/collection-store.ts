@@ -174,6 +174,8 @@ export interface Collection {
   createdAt: string;
 }
 
+import { db } from "./db";
+
 const KEY = "ral_collections_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -181,11 +183,7 @@ const listeners = new Set<Listener>();
 const uid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
 
 function load(): Collection[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return seed();
+  return db.getSync(KEY, seed()) || [];
 }
 
 function seed(): Collection[] {
@@ -196,7 +194,7 @@ let state: Collection[] = typeof window !== "undefined" ? load() : [];
 
 function save(next: Collection[]) {
   state = next;
-  try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
+  db.saveSync(KEY, next);
   listeners.forEach(l => l());
 }
 
