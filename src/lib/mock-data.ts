@@ -135,6 +135,6 @@ export const store = {
   getUsers: () => mockUsers,
 
   resetAll: () => {
-    Object.values(STORAGE_KEYS).forEach((k) => localStorage.removeItem(k));
+    import("./utils").then(u => u.clearAllStorageExceptLogin());
   },
 };

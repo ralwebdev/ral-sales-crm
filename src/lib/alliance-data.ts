@@ -100,7 +100,9 @@ export const allianceStore = {
   // Users
   getUsers: () => allianceUsers,
   // Reset
-  resetAll: () => Object.values(KEYS).forEach((k) => localStorage.removeItem(k)),
+  resetAll: () => {
+    import("./utils").then(u => u.clearAllStorageExceptLogin());
+  },
 };
 
 // CSV export utility
