@@ -1,0 +1,9 @@
+<<<<<<< SEARCH
+import { useState, useRef, useEffect, useCallback } from "react";
+import { store } from "@/lib/mock-data";
+=======
+import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
+import { store } from "@/lib/mock-data";
+import { getCollections, subscribeCollections, logCollection, submitToAdmin, type Collection } from "@/lib/collection-store";
+import { useAuth } from "@/lib/auth-context";
+>>>>>>> REPLACE
