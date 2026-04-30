@@ -725,20 +725,24 @@ function OwnerDashboard() {
       <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
         <StatCard title="Leads This Month" value={totalLeadsGenerated} icon={<Users className="h-5 w-5" />} />
         <StatCard title="Campaign Spend" value={`₹${totalSpend.toLocaleString()}`} icon={<DollarSign className="h-5 w-5" />} />
-        <StatCard title="Cost Per Lead" value={`₹${cpl}`} icon={<Target className="h-5 w-5" />} />
+        <UniversalCardWrapper microcopyKey="total_collections" drillType="collections" drillTitle="Total Collections">
+          <StatCard title="Total Collections" value={`₹${totalCollected.toLocaleString()}`} icon={<DollarSign className="h-5 w-5" />} />
+        </UniversalCardWrapper>
+        <UniversalCardWrapper microcopyKey="pending_verification" drillType="verifications" drillTitle="Pending Verification">
+          <StatCard title="Pending Verification" value={getCollections().filter(c => c.status === "Awaiting Verification").length} icon={<Shield className="h-5 w-5" />} />
+        </UniversalCardWrapper>
+        <UniversalCardWrapper microcopyKey="revenue_realized" drillType="revenue" drillTitle="Revenue Realized">
+          <StatCard title="Revenue Realized" value={`₹${getCollections().filter(c => c.status === "Invoice Generated").reduce((s, c) => s + (c.amount || 0), 0).toLocaleString()}`} icon={<TrendingUp className="h-5 w-5" />} />
+        </UniversalCardWrapper>
+        <UniversalCardWrapper microcopyKey="risk_alerts" drillType="risk_cases" drillTitle="Risk Alerts">
+          <StatCard title="Risk Alerts" value={getCollections().filter(c => c.status === "Mismatch" || c.status === "Rejected").length} icon={<AlertTriangle className="h-5 w-5" />} className={getCollections().some(c => c.status === "Mismatch") ? "border-destructive/20" : ""} />
+        </UniversalCardWrapper>
         <StatCard title="CPA" value={`₹${cpa.toLocaleString()}`} icon={<Target className="h-5 w-5" />}
           trend={cpaStatus === "excellent" ? "Excellent ✓" : cpaStatus === "healthy" ? "Healthy ✓" : "Needs Attention ✗"}
           className={cpaStatus === "attention" ? "border-destructive/20" : ""} />
         <StatCard title="ROAS" value={`${roas.toFixed(1)}x`} icon={<BarChart3 className="h-5 w-5" />}
           trend={roasOK ? `≥${BENCHMARKS.minROAS}x ✓` : `< ${BENCHMARKS.minROAS}x ✗`}
           className={!roasOK && totalSpend > 0 ? "border-destructive/20" : ""} />
-        <div className="rounded-xl bg-card p-3 sm:p-5 shadow-card cursor-pointer hover:shadow-card-hover" onClick={() => setDrillDown("admissions")}>
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Admissions</p>
-          <p className="mt-0.5 sm:mt-1 text-lg sm:text-2xl font-bold text-primary underline decoration-dotted">{admissions.length}</p>
-          <p className="mt-0.5 text-[10px] sm:text-xs text-muted-foreground">Click to drill down</p>
-        </div>
-        <StatCard title="Conv Rate" value={`${convRate}%`} icon={<TrendingUp className="h-5 w-5" />} />
-        <StatCard title="Avg ATT" value={`${avgATT}d`} icon={<Timer className="h-5 w-5" />} />
       </div>
 
       {/* ── SECTION 3: Revenue Efficiency Widget ── */}
