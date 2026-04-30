@@ -1334,10 +1334,18 @@ function AdminDashboard() {
         <p className="text-sm text-muted-foreground">System administration and operations</p>
       </div>
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total Users" value={users.length} icon={<Users className="h-5 w-5" />} />
-        <StatCard title="Active Leads" value={leads.filter((l) => l.status !== "Lost" && l.status !== "Admission").length} icon={<Activity className="h-5 w-5" />} />
-        <StatCard title="Admissions" value={admissions.length} icon={<GraduationCap className="h-5 w-5" />} />
-        <StatCard title="Campaigns" value={campaigns.length} icon={<Megaphone className="h-5 w-5" />} />
+        <UniversalCardWrapper microcopyKey="pending_verifications" drillType="verifications" drillTitle="Pending Verifications">
+          <StatCard title="Pending Verifications" value={getCollections().filter(c => c.status === "Awaiting Verification").length} icon={<Shield className="h-5 w-5" />} />
+        </UniversalCardWrapper>
+        <UniversalCardWrapper microcopyKey="verified_today" drillType="collections" drillTitle="Verified Today">
+          <StatCard title="Verified Today" value={getCollections().filter(c => c.status === "Verified" && (c.verifiedAt || "").startsWith(new Date().toISOString().slice(0,10))).length} icon={<CheckCircle2 className="h-5 w-5" />} />
+        </UniversalCardWrapper>
+        <UniversalCardWrapper microcopyKey="hold_cases" drillType="risk_cases" drillTitle="Hold / Risk Cases">
+          <StatCard title="Hold / Risk Cases" value={getCollections().filter(c => c.status === "Mismatch" || c.status === "Rejected").length} icon={<AlertTriangle className="h-5 w-5" />} />
+        </UniversalCardWrapper>
+        <UniversalCardWrapper microcopyKey="sent_to_accounts" drillType="invoices" drillTitle="Sent to Accounts">
+          <StatCard title="Sent to Accounts" value={getCollections().filter(c => c.status === "Ready For Invoice" || c.status === "Invoice Generated").length} icon={<FileText className="h-5 w-5" />} />
+        </UniversalCardWrapper>
       </div>
 
       {/* User management */}
