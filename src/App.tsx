@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { DrillDownProvider } from "@/core/drilldownEngine";
+import { MicrocopyProvider } from "@/core/MicrocopyProvider";
 import { AppLayout } from "@/components/AppLayout";
 import RoleDashboard from "@/pages/RoleDashboard";
 import CampaignsPage from "@/pages/CampaignsPage";
@@ -61,9 +62,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <DrillDownProvider>
-            <AppRoutes />
-          </DrillDownProvider>
+          <MicrocopyProvider>
+            <DrillDownProvider>
+              <AppRoutes />
+            </DrillDownProvider>
+          </MicrocopyProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

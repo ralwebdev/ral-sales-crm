@@ -48,16 +48,19 @@ function UniversalCardWrapperBase({
   const { currentUser } = useAuth();
   const drill = useDrillDown();
   const role = currentUser?.role;
-  const drillAllowed = !!drillType && canDrill(role);
+
+  // Auto-infer drill dataset from microcopy key when not explicitly provided.
+  const inferredDrill = drillType || inferDrillType(microcopyKey);
+  const drillAllowed = !!inferredDrill && canDrill(role);
 
   const text = microcopyKey
     ? getMicrocopy(microcopyKey, role, hint || "")
     : hint || "";
 
   const handleClick = () => {
-    if (!drillAllowed || !drillType) return;
+    if (!drillAllowed || !inferredDrill) return;
     drill.open({
-      type: drillType,
+      type: inferredDrill,
       title: drillTitle || (typeof microcopyKey === "string" ? microcopyKey : "Drill-down"),
       dataKey,
     });
@@ -103,3 +106,20 @@ function UniversalCardWrapperBase({
 }
 
 export const UniversalCardWrapper = memo(UniversalCardWrapperBase);
+
+/**
+ * Auto-map a microcopy / card id to a drill dataset.
+ * Returns undefined if no sensible mapping exists.
+ */
+function inferDrillType(key?: string): DrillType | undefined {
+  if (!key) return undefined;
+  const k = key.toLowerCase();
+  if (k.includes("collection")) return "collections";
+  if (k.includes("verif")) return "verifications";
+  if (k.includes("invoice") || k.includes("pi") || k.includes("ti")) return "invoices";
+  if (k.includes("revenue") || k.includes("realized")) return "revenue";
+  if (k.includes("due") || k.includes("pending_payment") || k.includes("outstand")) return "dues";
+  if (k.includes("risk") || k.includes("mismatch") || k.includes("alert") || k.includes("hold") || k.includes("reject")) return "risk_cases";
+  return undefined;
+}
+

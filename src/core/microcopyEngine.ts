@@ -99,9 +99,10 @@ export function getMicrocopy(
   fallback = ""
 ): string {
   const entry = (MICROCOPY as Record<string, MicrocopyEntry | undefined>)[key];
-  if (!entry) return fallback;
+  const defaultText = "View details or perform action";
+  if (!entry) return fallback || defaultText;
   if (role && entry.roles && entry.roles[role]) return entry.roles[role] as string;
-  return entry.default || fallback;
+  return entry.default || fallback || defaultText;
 }
 
 /** UI behaviour constants (kept here so the wrapper has a single config point). */
