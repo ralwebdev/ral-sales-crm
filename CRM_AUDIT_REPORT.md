@@ -17,13 +17,39 @@ This report provides a comprehensive audit of a Lovable-generated CRM applicatio
 
 ### 2. Role-Based Access Control (RBAC)
 - **Roles Defined**: `admin`, `marketing_manager`, `telecaller`, `counselor`, `telecalling_manager`, `owner`, `alliance_manager`, `alliance_executive`, `accounts_manager`, `accounts_executive`.
-- **Enforcement Mechanism**:
+
+### 3. User Hierarchy & Reporting Lines
+Based on the approval engine logic (`approvals.ts`) and dashboard monitoring capabilities, the following hierarchy is enforced:
+
+```
+System Administrator / Owner
+|
+|-- Accounts Manager
+|   |-- Accounts Executive
+|
+|-- Telecalling Manager
+|   |-- Telecaller
+|
+|-- Marketing Manager
+|
+|-- Alliance Manager
+|   |-- Alliance Executive
+|
+|-- Academic Counselor
+```
+
+**Key Hierarchical Interactions:**
+- **Approvals**: `Alliance Executives` report to `Alliance Managers`. All managers (`Telecalling`, `Marketing`, `Alliance`) escalate to `Admin/Owner` for high-value approvals.
+- **Finance Tiers**: Expense approvals follow a value-based chain: `Executive` (<₹5k) -> `Manager` (₹5k-₹25k) -> `Owner` (>₹25k).
+- **Monitoring**: `Telecalling Manager` has specialized dashboard views to track individual `Telecaller` metrics (ATT, Connected Rate).
+
+### 4. Enforcement Mechanism:
     - **Route Guard**: `AppLayout.tsx` contains logic to check if the `location.pathname` matches the allowed routes defined in `roleNavConfig` (found in `src/lib/role-config.ts`).
     - **UI Masking**: If a user attempts to access an unauthorized route, the `AppLayout` renders an "Access Denied" screen.
     - **Dynamic Navigation**: The sidebar menu is generated dynamically based on the user's role using `roleNavConfig`.
     - **Conditional Dashboards**: `RoleDashboard.tsx` acts as a router, rendering a specific dashboard component (e.g., `TelecallerDashboard`, `OwnerDashboard`) based on the logged-in user's role.
 
-### 3. Data Association & Models
+### 5. Data Association & Models
 - **Tying User Identity to Entities**:
     - **Leads**: Linked to a Telecaller via `assignedTelecallerId` and to a Counselor via `assignedCounselor`.
     - **Call Logs**: Explicitly tied to the caller via `telecallerId`.
@@ -31,7 +57,7 @@ This report provides a comprehensive audit of a Lovable-generated CRM applicatio
     - **Admissions**: Connected to leads via `leadId`, implicitly inheriting the telecaller/counselor associations.
 - **Relational Expectations**: The frontend expects a relational structure where entities refer to each other by ID. It relies on a centralized "store" (`src/lib/mock-data.ts` and `src/lib/finance-store.ts`) that manages these relations in-memory and persists them to `localStorage`.
 
-### 4. State Management
+### 6. State Management
 - **Flow of User Object**: `localStorage` / Login Form -> `AuthProvider` State -> `AuthContext` -> `useAuth()` Hook -> UI Components.
 - **Data Persistence**: Most CRM data uses a custom store pattern with `useSyncExternalStore` (in Finance) or manual state updates coupled with `localStorage` saves. This ensures some degree of reactivity across the app.
 
