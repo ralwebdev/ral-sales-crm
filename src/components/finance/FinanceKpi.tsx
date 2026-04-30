@@ -2,6 +2,9 @@ import { ReactNode } from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { UniversalCardWrapper } from "@/components/UniversalCardWrapper";
+import type { MicrocopyKey } from "@/core/microcopyEngine";
+import type { DrillType } from "@/core/drilldownEngine";
 
 interface KpiProps {
   label: string;
@@ -11,6 +14,12 @@ interface KpiProps {
   tone?: "default" | "success" | "warning" | "destructive" | "primary";
   icon?: ReactNode;
   onClick?: () => void;
+  /** Optional microcopy key (defaults to label-derived id). */
+  microcopyKey?: MicrocopyKey | string;
+  /** Drill-down dataset; admin/owner only. */
+  drillType?: DrillType;
+  /** Optional drawer title. */
+  drillTitle?: string;
 }
 
 const toneClass: Record<NonNullable<KpiProps["tone"]>, string> = {
