@@ -58,9 +58,9 @@ function UniversalCardWrapperBase({
     : hint || "";
 
   const handleClick = () => {
-    if (!drillAllowed || !drillType) return;
+    if (!drillAllowed || !inferredDrill) return;
     drill.open({
-      type: drillType,
+      type: inferredDrill,
       title: drillTitle || (typeof microcopyKey === "string" ? microcopyKey : "Drill-down"),
       dataKey,
     });
