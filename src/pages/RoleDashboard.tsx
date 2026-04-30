@@ -17,6 +17,8 @@ import {
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from "recharts";
 import { useMemo, useState } from "react";
+import { UniversalCardWrapper } from "@/components/UniversalCardWrapper";
+import { getCollections } from "@/lib/collection-store";
 
 const CHART_COLORS = [
   "hsl(358, 78%, 51%)", "hsl(38, 92%, 50%)", "hsl(142, 71%, 45%)",
