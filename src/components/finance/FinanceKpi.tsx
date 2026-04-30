@@ -30,32 +30,39 @@ const toneClass: Record<NonNullable<KpiProps["tone"]>, string> = {
   primary: "border-l-4 border-l-primary",
 };
 
-export function FinanceKpi({ label, value, hint, trend, tone = "default", icon, onClick }: KpiProps) {
-  const clickable = !!onClick;
+export function FinanceKpi({ label, value, hint, trend, tone = "default", icon, onClick, microcopyKey, drillType, drillTitle }: KpiProps) {
+  const clickable = !!onClick || !!drillType;
   return (
-    <Card
-      onClick={onClick}
-      className={cn(
-        "p-4 bg-card transition-all",
-        toneClass[tone],
-        clickable && "cursor-pointer hover:shadow-md hover:-translate-y-0.5"
-      )}
+    <UniversalCardWrapper
+      microcopyKey={microcopyKey || label.toLowerCase().replace(/\s+/g, "_")}
+      hint={hint || "View details or perform action"}
+      drillType={drillType}
+      drillTitle={drillTitle || label}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs text-muted-foreground font-medium truncate">{label}</p>
-          <p className="text-2xl font-bold text-foreground mt-1 tabular-nums">{value}</p>
-          {hint && <p className="text-xs text-muted-foreground mt-1 truncate">{hint}</p>}
+      <Card
+        onClick={onClick}
+        className={cn(
+          "p-4 bg-card transition-all",
+          toneClass[tone],
+          clickable && "cursor-pointer hover:shadow-md hover:-translate-y-0.5"
+        )}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground font-medium truncate">{label}</p>
+            <p className="text-2xl font-bold text-foreground mt-1 tabular-nums">{value}</p>
+            {hint && <p className="text-xs text-muted-foreground mt-1 truncate">{hint}</p>}
+          </div>
+          {icon && <div className="text-muted-foreground shrink-0">{icon}</div>}
         </div>
-        {icon && <div className="text-muted-foreground shrink-0">{icon}</div>}
-      </div>
-      {typeof trend === "number" && (
-        <div className={cn("flex items-center gap-1 text-xs mt-2 font-medium", trend >= 0 ? "text-emerald-600" : "text-destructive")}>
-          {trend >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-          {Math.abs(trend).toFixed(1)}% vs last period
-        </div>
-      )}
-    </Card>
+        {typeof trend === "number" && (
+          <div className={cn("flex items-center gap-1 text-xs mt-2 font-medium", trend >= 0 ? "text-emerald-600" : "text-destructive")}>
+            {trend >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+            {Math.abs(trend).toFixed(1)}% vs last period
+          </div>
+        )}
+      </Card>
+    </UniversalCardWrapper>
   );
 }
 
