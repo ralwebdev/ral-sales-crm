@@ -48,7 +48,10 @@ function UniversalCardWrapperBase({
   const { currentUser } = useAuth();
   const drill = useDrillDown();
   const role = currentUser?.role;
-  const drillAllowed = !!drillType && canDrill(role);
+
+  // Auto-infer drill dataset from microcopy key when not explicitly provided.
+  const inferredDrill = drillType || inferDrillType(microcopyKey);
+  const drillAllowed = !!inferredDrill && canDrill(role);
 
   const text = microcopyKey
     ? getMicrocopy(microcopyKey, role, hint || "")
