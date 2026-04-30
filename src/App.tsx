@@ -62,9 +62,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <DrillDownProvider>
-            <AppRoutes />
-          </DrillDownProvider>
+          <MicrocopyProvider>
+            <DrillDownProvider>
+              <AppRoutes />
+            </DrillDownProvider>
+          </MicrocopyProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
