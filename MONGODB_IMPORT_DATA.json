@@ -1,0 +1,139 @@
+{
+  "users": [
+    { "id": "u1", "name": "Amit Sharma", "email": "amit@redapple.com", "password": "admin123", "role": "admin" },
+    { "id": "u2", "name": "Soumya Saha", "email": "soumya@redapple.com", "password": "marketing123", "role": "marketing_manager" },
+    { "id": "u3", "name": "Shreya Chakraborty", "email": "shreya@redapple.com", "password": "telecaller123", "role": "telecaller" },
+    { "id": "u4", "name": "Priya Das", "email": "priya@redapple.com", "password": "telecaller123", "role": "telecaller" },
+    { "id": "u5", "name": "Manjari Chakraborty", "email": "manjari@redapple.com", "password": "counselor123", "role": "counselor" },
+    { "id": "u6", "name": "Vikram Singh", "email": "vikram@redapple.com", "password": "manager123", "role": "telecalling_manager" },
+    { "id": "u7", "name": "Rajesh Kapoor", "email": "rajesh@redapple.com", "password": "owner123", "role": "owner" },
+    { "id": "am1", "name": "Rohit Banerjee", "email": "rohit@redapple.com", "password": "alliance123", "role": "alliance_manager" },
+    { "id": "ae1", "name": "Sneha Roy", "email": "sneha@redapple.com", "password": "alliance123", "role": "alliance_executive" },
+    { "id": "ae2", "name": "Karan Mehta", "email": "karan@redapple.com", "password": "alliance123", "role": "alliance_executive" },
+    { "id": "ae3", "name": "Pooja Nair", "email": "pooja@redapple.com", "password": "alliance123", "role": "alliance_executive" },
+    { "id": "acm1", "name": "Neha Gupta", "email": "neha@redapple.com", "password": "accounts123", "role": "accounts_manager" },
+    { "id": "ace1", "name": "Arjun Patel", "email": "arjun@redapple.com", "password": "accounts123", "role": "accounts_executive" }
+  ],
+  "courses": [
+    { "id": "cr1", "name": "Graphic Design", "category": "Design", "duration": "3 Months", "fee": 45000, "placementSupport": true },
+    { "id": "cr2", "name": "UI/UX Design", "category": "Design", "duration": "4 Months", "fee": 90000, "placementSupport": true },
+    { "id": "cr3", "name": "Motion Graphics", "category": "Design", "duration": "5 Months", "fee": 118000, "placementSupport": true },
+    { "id": "cr4", "name": "Web Design", "category": "Design", "duration": "3 Months", "fee": 45000, "placementSupport": true },
+    { "id": "cr5", "name": "HTML & CSS", "category": "Development", "duration": "1 Month", "fee": 15000, "placementSupport": false },
+    { "id": "cr6", "name": "WordPress", "category": "Development", "duration": "2 Months", "fee": 45000, "placementSupport": false },
+    { "id": "cr7", "name": "Digital Marketing", "category": "Marketing", "duration": "4 Months", "fee": 90000, "placementSupport": true },
+    { "id": "cr8", "name": "AI / ML", "category": "Data", "duration": "8 Months", "fee": 260000, "placementSupport": true },
+    { "id": "cr9", "name": "Game Development", "category": "Development", "duration": "6 Months", "fee": 190000, "placementSupport": true },
+    { "id": "cr10", "name": "Full Stack Development", "category": "Development", "duration": "10 Months", "fee": 410000, "placementSupport": true }
+  ],
+  "campaigns": [
+    {
+      "id": "c1",
+      "name": "Summer Coding Bootcamp",
+      "platform": "Meta",
+      "objective": "Lead Generation",
+      "budget": 15000,
+      "dailyBudget": 500,
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-31",
+      "targetLocation": "Kolkata, Delhi",
+      "leadsGenerated": 95,
+      "costPerLead": 158,
+      "createdAt": "2026-03-01",
+      "approvalStatus": "Active"
+    },
+    {
+      "id": "c2",
+      "name": "AI & Data Science Push",
+      "platform": "Google",
+      "objective": "Lead Generation",
+      "budget": 12000,
+      "dailyBudget": 400,
+      "startDate": "2026-03-10",
+      "endDate": "2026-04-10",
+      "targetLocation": "Kolkata, Bangalore",
+      "leadsGenerated": 70,
+      "costPerLead": 171,
+      "createdAt": "2026-03-10",
+      "approvalStatus": "Active"
+    }
+  ],
+  "leads": [
+    {
+      "id": "l1",
+      "name": "Aarav Kumar",
+      "phone": "9876543210",
+      "email": "aarav@email.com",
+      "source": "Meta Ad",
+      "campaignId": "c1",
+      "interestedCourse": "Full Stack Development",
+      "assignedTelecallerId": "u3",
+      "status": "New",
+      "createdAt": "2026-03-24",
+      "leadScore": 72,
+      "leadQuality": "Warm",
+      "temperature": "Warm",
+      "priorityCategory": "High Priority"
+    },
+    {
+      "id": "l2",
+      "name": "Diya Singh",
+      "phone": "9876543211",
+      "email": "diya@email.com",
+      "source": "Google Ad",
+      "campaignId": "c2",
+      "interestedCourse": "AI / ML",
+      "assignedTelecallerId": "u3",
+      "status": "Contacted",
+      "createdAt": "2026-03-23",
+      "leadScore": 85,
+      "leadQuality": "Hot",
+      "temperature": "Hot"
+    }
+  ],
+  "admissions": [
+    {
+      "id": "a1",
+      "leadId": "l6",
+      "studentName": "Ishita Chopra",
+      "phone": "9876543215",
+      "email": "ishita@email.com",
+      "courseSelected": "Digital Marketing",
+      "batch": "DM-2026-A",
+      "admissionDate": "2026-03-20",
+      "totalFee": 90000,
+      "paymentStatus": "Partial"
+    }
+  ],
+  "institutions": [
+    {
+      "id": "inst1",
+      "institutionId": "INS-0001",
+      "name": "Delhi Public School Kolkata",
+      "type": "School",
+      "boardUniversity": "CBSE",
+      "city": "Kolkata",
+      "studentStrength": 2400,
+      "pipelineStage": "MoU Signed"
+    },
+    {
+      "id": "inst2",
+      "institutionId": "INS-0002",
+      "name": "St. Xavier's College",
+      "type": "College",
+      "boardUniversity": "Autonomous",
+      "city": "Kolkata",
+      "studentStrength": 4500,
+      "pipelineStage": "Negotiation"
+    }
+  ],
+  "finance": {
+    "invoices": [
+      { "invoiceNo": "PI-2026-0001", "customerName": "Aarav Patel", "total": 90000, "status": "Paid", "invoiceType": "PI" },
+      { "invoiceNo": "TI-2026-0001", "customerName": "Diya Roy", "total": 90000, "status": "Partial", "invoiceType": "TI" }
+    ],
+    "expenses": [
+      { "expenseNo": "EXP-2026-0001", "category": "Marketing", "vendorName": "BrightAds Media", "total": 94400, "status": "Approved" }
+    ]
+  }
+}

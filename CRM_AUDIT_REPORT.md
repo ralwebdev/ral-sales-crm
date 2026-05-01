@@ -150,3 +150,16 @@ graph TD
 5.  **Lack of Error Boundaries**: There is minimal evidence of global or component-level error boundaries for handling data corruption or failed "API" calls.
 6.  **Direct LocalStorage Interaction**: Components directly call `store.saveLeads()` etc., which circumvents potential middleware or validation layers that a centralized state manager (like Redux or a robust React Query setup) would provide.
 7.  **Unused Boilerplate (React Query)**: While `App.tsx` initializes a `QueryClientProvider`, the application does not actually utilize `useQuery` or `useMutation` for data fetching. Instead, it relies on synchronous `localStorage` reads. This creates a misleading architectural footprint.
+
+---
+
+## Data Schema & MongoDB Integration
+For migrating the mock data to a MongoDB environment, the following collections have been mapped and consolidated in `MONGODB_IMPORT_DATA.json`:
+
+1.  **`users`**: Authentication and RBAC profiles.
+2.  **`courses`**: Course catalog with fee tiers and placement support flags.
+3.  **`campaigns`**: Marketing metadata, budgets, and lead generation tracking.
+4.  **`leads`**: CRM prospects with quality scores, assignment IDs, and funnel statuses.
+5.  **`admissions`**: Converted student records with course selection and payment status.
+6.  **`institutions`**: B2B and institutional sales pipeline accounts.
+7.  **`finance`**: Invoices (PI/TI) and expense records for auditing and Tally export.
