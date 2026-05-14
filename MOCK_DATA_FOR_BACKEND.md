@@ -4973,69 +4973,222 @@ This file contains all the mock data used in the frontend, formatted for direct 
 ```json
 [
   {
-    "id": "ex1",
+    "id": "ex_bfe722pd1s",
     "executiveId": "ae1",
     "institutionId": "inst1",
     "expenseType": "Travel",
-    "amount": 850,
-    "billUrl": "",
+    "amount": 1200,
+    "billUrl": "https://example.com/bill1.jpg",
     "expenseDate": {
-      "$date": "2026-05-02T00:00:00Z"
+      "$date": "2026-05-09T09:09:59.220Z"
     },
     "status": "Approved",
-    "notes": "Cab to DPS."
+    "notes": "Site visit to DPS"
   },
   {
-    "id": "ex2",
-    "executiveId": "ae1",
-    "institutionId": "inst2",
-    "expenseType": "Meals",
-    "amount": 420,
-    "billUrl": "",
-    "expenseDate": {
-      "$date": "2026-05-06T00:00:00Z"
-    },
-    "status": "Reimbursed",
-    "notes": ""
-  },
-  {
-    "id": "ex3",
+    "id": "ex_3ba9e5pd1s",
     "executiveId": "ae2",
     "institutionId": "inst3",
-    "expenseType": "Print Material",
-    "amount": 1200,
-    "billUrl": "",
+    "expenseType": "Meals",
+    "amount": 850,
+    "billUrl": "https://example.com/bill2.jpg",
     "expenseDate": {
-      "$date": "2026-05-08T00:00:00Z"
+      "$date": "2026-05-12T09:09:59.220Z"
     },
     "status": "Submitted",
-    "notes": "Brochures."
+    "notes": "Lunch with Dean at Heritage"
+  }
+]
+```
+
+## Collection: studentCollections
+
+```json
+[
+  {
+    "id": "col_6c3ea1pd1r",
+    "receiptRef": "RC-2026-1001",
+    "studentId": "l1",
+    "studentName": "Aarav Kumar",
+    "courseName": "Full Stack Development",
+    "amount": 35000,
+    "mode": "upi",
+    "reason": "admission_fee",
+    "collectedAt": {
+      "$date": "2026-05-12T09:09:59.220Z"
+    },
+    "collectedById": "u5",
+    "collectedByName": "Manjari Chakraborty",
+    "collectorRole": "counselor",
+    "status": "Invoice Generated",
+    "invoiceRequest": {
+      "type": "TI",
+      "status": "issued",
+      "requestedById": "u5",
+      "requestedByName": "Manjari Chakraborty",
+      "requestedAt": {
+        "$date": "2026-05-12T09:09:59.220Z"
+      },
+      "preparedById": "ae1",
+      "preparedByName": "Sneha Roy",
+      "preparedAt": {
+        "$date": "2026-05-13T09:09:59.220Z"
+      },
+      "issuedById": "acm1",
+      "issuedByName": "Neha Gupta",
+      "issuedAt": {
+        "$date": "2026-05-13T09:09:59.220Z"
+      },
+      "invoiceNo": "TI-2026-001"
+    },
+    "audit": [
+      {
+        "id": "aud_f61150pd1s",
+        "at": {
+          "$date": "2026-05-13T09:09:59.220Z"
+        },
+        "byId": "acm1",
+        "byName": "Neha Gupta",
+        "byRole": "accounts_manager",
+        "action": "Invoice issued (TI TI-2026-001)"
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-12T09:09:59.220Z"
+    }
   },
   {
-    "id": "ex4",
-    "executiveId": "ae3",
-    "institutionId": "inst5",
-    "expenseType": "Travel",
-    "amount": 1500,
-    "billUrl": "",
-    "expenseDate": {
-      "$date": "2026-05-13T00:00:00Z"
+    "id": "col_1aef80pd1s",
+    "receiptRef": "RC-2026-1002",
+    "studentId": "l2",
+    "studentName": "Diya Singh",
+    "courseName": "AI / ML",
+    "amount": 50000,
+    "mode": "bank_transfer",
+    "reason": "emi_payment",
+    "collectedAt": {
+      "$date": "2026-05-11T09:09:59.220Z"
     },
-    "status": "Submitted",
-    "notes": "Long-distance fuel."
+    "collectedById": "u5",
+    "collectedByName": "Manjari Chakraborty",
+    "collectorRole": "counselor",
+    "status": "Ready For Invoice",
+    "invoiceRequest": {
+      "type": "TI",
+      "status": "awaiting_accounts",
+      "requestedById": "u5",
+      "requestedByName": "Manjari Chakraborty",
+      "requestedAt": {
+        "$date": "2026-05-11T09:09:59.220Z"
+      },
+      "adminReviewedById": "u1",
+      "adminReviewedByName": "Amit Sharma",
+      "adminReviewedAt": {
+        "$date": "2026-05-12T09:09:59.220Z"
+      }
+    },
+    "audit": [
+      {
+        "id": "aud_840702pd1s",
+        "at": {
+          "$date": "2026-05-12T09:09:59.220Z"
+        },
+        "byId": "u1",
+        "byName": "Amit Sharma",
+        "byRole": "admin",
+        "action": "Admin approved invoice request"
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-11T09:09:59.220Z"
+    }
   },
   {
-    "id": "ex5",
-    "executiveId": "ae2",
-    "institutionId": "inst8",
-    "expenseType": "Gifts",
-    "amount": 2200,
-    "billUrl": "",
-    "expenseDate": {
-      "$date": "2026-04-19T00:00:00Z"
+    "id": "col_fd2c9dpd1s",
+    "receiptRef": "RC-2026-1003",
+    "studentId": "l4",
+    "studentName": "Ananya Joshi",
+    "courseName": "UI/UX Design",
+    "amount": 90000,
+    "mode": "card",
+    "reason": "admission_fee",
+    "collectedAt": {
+      "$date": "2026-05-13T09:09:59.220Z"
     },
-    "status": "Approved",
-    "notes": "Token of appreciation."
+    "collectedById": "u5",
+    "collectedByName": "Manjari Chakraborty",
+    "collectorRole": "counselor",
+    "status": "Awaiting Verification",
+    "invoiceRequest": {
+      "type": "PI",
+      "status": "awaiting_admin_review",
+      "requestedById": "u5",
+      "requestedByName": "Manjari Chakraborty",
+      "requestedAt": {
+        "$date": "2026-05-13T09:09:59.220Z"
+      }
+    },
+    "audit": [
+      {
+        "id": "aud_00caa9pd1s",
+        "at": {
+          "$date": "2026-05-13T09:09:59.220Z"
+        },
+        "byId": "u5",
+        "byName": "Manjari Chakraborty",
+        "byRole": "counselor",
+        "action": "Invoice request created (PI)"
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-13T09:09:59.220Z"
+    }
+  },
+  {
+    "id": "col_6b52d2pd1s",
+    "receiptRef": "RC-2026-1004",
+    "studentId": "l6",
+    "studentName": "Ishita Chopra",
+    "courseName": "Digital Marketing",
+    "amount": 15000,
+    "mode": "cash",
+    "reason": "registration_fee",
+    "collectedAt": {
+      "$date": "2026-05-10T09:09:59.220Z"
+    },
+    "collectedById": "u5",
+    "collectedByName": "Manjari Chakraborty",
+    "collectorRole": "counselor",
+    "status": "Verified",
+    "invoiceRequest": {
+      "type": "TI",
+      "status": "draft_prepared",
+      "requestedById": "u5",
+      "requestedByName": "Manjari Chakraborty",
+      "requestedAt": {
+        "$date": "2026-05-10T09:09:59.220Z"
+      },
+      "preparedById": "ae1",
+      "preparedByName": "Sneha Roy",
+      "preparedAt": {
+        "$date": "2026-05-12T09:09:59.220Z"
+      }
+    },
+    "audit": [
+      {
+        "id": "aud_c76297pd1s",
+        "at": {
+          "$date": "2026-05-12T09:09:59.220Z"
+        },
+        "byId": "ae1",
+        "byName": "Sneha Roy",
+        "byRole": "accounts_executive",
+        "action": "Accounts prepared draft"
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-10T09:09:59.220Z"
+    }
   }
 ]
 ```
