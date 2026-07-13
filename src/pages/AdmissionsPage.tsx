@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import { store } from "@/lib/mock-data";
+import { getCollections, subscribeCollections, logCollection, submitToAdmin, type Collection } from "@/lib/collection-store";
+import { useAuth } from "@/lib/auth-context";
 import { Admission, PaymentStatus, PaymentMode, PaymentType, PaymentHistoryEntry } from "@/lib/types";
 import {
   MASTER_PAYMENT_MODES, MASTER_COURSE_NAMES, MASTER_BATCH_TIMINGS,
@@ -30,21 +32,21 @@ function getReferenceDisplay(mode: PaymentMode | "", chequeNumber: string, trans
 }
 
 // Smart Suggestion Card
-function SuggestionCard({ admission }: { admission: Admission | null }) {
+function SuggestionCard({ admission, verifiedPayments }: { admission: Admission | null, verifiedPayments: Collection[] }) {
   if (!admission) return null;
 
-  const lastPayment = admission.paymentHistory.length > 0
-    ? admission.paymentHistory[admission.paymentHistory.length - 1]
+  const lastPayment = verifiedPayments.length > 0
+    ? verifiedPayments[0] // Assuming collections are sorted reverse chronologically, or we'll sort them
     : null;
 
-  const totalPaid = admission.paymentHistory.reduce((s, p) => s + p.amountPaid, 0);
+  const totalPaid = verifiedPayments.reduce((s, p) => s + p.amount, 0);
   const remaining = admission.totalFee - totalPaid;
 
   // Calculate next EMI due date (30 days after last payment)
   let nextEmiDate = "";
   let isOverdue = false;
   if (admission.paymentType === "EMI" && lastPayment) {
-    const last = new Date(lastPayment.paymentDate);
+    const last = new Date(lastPayment.collectedAt);
     last.setDate(last.getDate() + 30);
     nextEmiDate = last.toISOString().split("T")[0];
     isOverdue = new Date(nextEmiDate) < new Date();
@@ -196,6 +198,7 @@ function PaymentForm({
   admission: Admission;
   onSave: (updated: Admission) => void;
 }) {
+  const { currentUser } = useAuth();
   const [amountPaid, setAmountPaid] = useState("");
   const [paymentMode, setPaymentMode] = useState<PaymentMode | "">("");
   const [chequeNumber, setChequeNumber] = useState("");
@@ -238,15 +241,36 @@ function PaymentForm({
   const handleSave = () => {
     if (!validate()) return;
 
-    const entry: PaymentHistoryEntry = {
-      id: `ph${Date.now()}`,
-      paymentDate: new Date().toISOString().split("T")[0],
-      amountPaid: parseFloat(amountPaid),
-      paymentMode: paymentMode as PaymentMode,
-      referenceNumber: getReferenceDisplay(paymentMode, chequeNumber, transactionId),
-      paymentType: paymentType,
-      emiNumber: paymentType === "EMI" ? parseInt(emiNumber) : null,
+    const actor = {
+      id: currentUser?.id || "u0",
+      name: currentUser?.name || "Counselor",
+      role: currentUser?.role || "counselor",
     };
+
+    // Mode mappings
+    let storeMode: any = "cash";
+    if (paymentMode === "Online Transfer") storeMode = "bank_transfer";
+    if (paymentMode === "Cheque") storeMode = "cheque";
+    if (paymentMode === "Credit Card" || paymentMode === "Debit Card") storeMode = "card";
+
+    // Log in collection-store
+    const collection = logCollection({
+      studentId: admission.id,
+      studentName: admission.studentName,
+      studentMobile: admission.phone || "",
+      courseName: admission.courseSelected,
+      branch: "Main Branch",
+      amount: parseFloat(amountPaid),
+      mode: storeMode,
+      reason: "admission_fee",
+      txnId: transactionId || undefined,
+      chequeNumber: chequeNumber || undefined,
+      remarks: paymentType === "EMI" ? `EMI ${emiNumber} of ${totalEmis}` : paymentType,
+      requestInvoiceType: "none",
+    }, actor);
+
+    // Auto submit to admin
+    submitToAdmin(collection.id, actor, "Admission fee payment logged from Admission Page");
 
     const updated: Admission = {
       ...admission,
@@ -257,11 +281,10 @@ function PaymentForm({
       paymentType,
       emiNumber: paymentType === "EMI" ? parseInt(emiNumber) : null,
       totalEmis: paymentType === "EMI" ? parseInt(totalEmis) : admission.totalEmis,
-      paymentHistory: [...admission.paymentHistory, entry],
     };
 
     onSave(updated);
-    toast.success("Payment recorded successfully.", { icon: <CheckCircle2 className="h-4 w-4" /> });
+    toast.success("Payment submitted to Admin for verification.", { icon: <CheckCircle2 className="h-4 w-4" /> });
   };
 
   const FieldError = ({ msg }: { msg?: string }) =>
@@ -370,6 +393,7 @@ export default function AdmissionsPage() {
   const [paymentDialogAdm, setPaymentDialogAdm] = useState<Admission | null>(null);
   const [selectedAdm, setSelectedAdm] = useState<Admission | null>(admissions[0] || null);
   const [newPaymentIds, setNewPaymentIds] = useState<Set<string>>(new Set());
+  const collections = useSyncExternalStore(subscribeCollections, getCollections, getCollections);
   const [autoPiAdm, setAutoPiAdm] = useState<Admission | null>(null);
   const navigate = useNavigate();
 
@@ -424,18 +448,15 @@ export default function AdmissionsPage() {
   };
 
   const handlePaymentSave = (updated: Admission) => {
-    const newHistory = updated.paymentHistory;
-    const lastEntry = newHistory[newHistory.length - 1];
     const all = admissions.map((a) => (a.id === updated.id ? updated : a));
     setAdmissions(all);
     store.saveAdmissions(all);
     setSelectedAdm(updated);
     setPaymentDialogAdm(null);
-    if (lastEntry) {
-      setNewPaymentIds((prev) => new Set(prev).add(lastEntry.id));
-      setTimeout(() => setNewPaymentIds((prev) => { const n = new Set(prev); n.delete(lastEntry.id); return n; }), 1600);
-    }
   };
+
+  const selectedAdmVerifiedPayments = collections.filter(c => c.studentId === selectedAdm?.id && c.status === "Verified")
+    .sort((a, b) => new Date(b.collectedAt).getTime() - new Date(a.collectedAt).getTime());
 
   const totalRevenue = admissions.reduce((sum, a) => sum + a.totalFee, 0);
   const paidCount = admissions.filter((a) => a.paymentStatus === "Paid").length;
@@ -587,14 +608,14 @@ export default function AdmissionsPage() {
         </div>
 
         {/* Smart Suggestion Card */}
-        <SuggestionCard admission={selectedAdm} />
+        <SuggestionCard admission={selectedAdm} verifiedPayments={selectedAdmVerifiedPayments} />
       </div>
 
       {/* Payment History for selected admission */}
-      {selectedAdm && selectedAdm.paymentHistory.length > 0 && (
+      {selectedAdm && selectedAdmVerifiedPayments.length > 0 && (
         <div className="rounded-xl bg-card shadow-card">
           <div className="p-4 border-b">
-            <h3 className="text-sm font-semibold text-foreground">Payment History — {selectedAdm.studentName}</h3>
+            <h3 className="text-sm font-semibold text-foreground">Verified Payments — {selectedAdm.studentName}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -604,22 +625,20 @@ export default function AdmissionsPage() {
                   <th className="p-4 font-medium">Amount</th>
                   <th className="p-4 font-medium">Mode</th>
                   <th className="p-4 font-medium">Reference</th>
-                  <th className="p-4 font-medium">Type</th>
-                  <th className="p-4 font-medium">EMI</th>
+                  <th className="p-4 font-medium">Remarks</th>
                 </tr>
               </thead>
               <tbody>
-                {selectedAdm.paymentHistory.map((p) => (
+                {selectedAdmVerifiedPayments.map((p) => (
                   <tr
                     key={p.id}
-                    className={`border-b last:border-0 ${newPaymentIds.has(p.id) ? "animate-highlight-row" : ""}`}
+                    className={`border-b last:border-0`}
                   >
-                    <td className="p-4 text-muted-foreground">{p.paymentDate}</td>
-                    <td className="p-4 font-medium text-card-foreground">₹{p.amountPaid.toLocaleString()}</td>
-                    <td className="p-4 text-muted-foreground">{p.paymentMode}</td>
-                    <td className="p-4 text-muted-foreground">{p.referenceNumber}</td>
-                    <td className="p-4 text-muted-foreground">{p.paymentType || "—"}</td>
-                    <td className="p-4 text-muted-foreground">{p.emiNumber ? `EMI ${p.emiNumber}` : "—"}</td>
+                    <td className="p-4 text-muted-foreground">{new Date(p.collectedAt).toISOString().split('T')[0]}</td>
+                    <td className="p-4 font-medium text-card-foreground">₹{p.amount.toLocaleString()}</td>
+                    <td className="p-4 text-muted-foreground uppercase">{p.mode}</td>
+                    <td className="p-4 text-muted-foreground">{p.receiptRef}</td>
+                    <td className="p-4 text-muted-foreground">{p.remarks || "—"}</td>
                   </tr>
                 ))}
               </tbody>
