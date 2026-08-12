@@ -28,18 +28,19 @@ export interface CollectionNotif {
   at: string;
 }
 
+import { db } from "./db";
+
 const KEY = "ral_collection_notifs_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
 function load(): CollectionNotif[] {
-  try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch {}
-  return [];
+  return db.getSync(KEY) || [];
 }
 let state: CollectionNotif[] = typeof window !== "undefined" ? load() : [];
 
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(state.slice(0, 200))); } catch {}
+  db.saveSync(KEY, state.slice(0, 200));
   listeners.forEach(l => l());
 }
 

@@ -15,6 +15,8 @@ export type PiTiEvent =
   | "high_value_PI_pending"
   | "mapping_error_detected";
 
+import { db } from "./db";
+
 const KEY = "ral_pi_ti_notifs_v1";
 
 export interface NotifEntry {
@@ -32,13 +34,12 @@ type Listener = () => void;
 const listeners = new Set<Listener>();
 
 function load(): NotifEntry[] {
-  try { const raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch {}
-  return [];
+  return db.getSync(KEY) || [];
 }
 let state: NotifEntry[] = typeof window !== "undefined" ? load() : [];
 
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(state.slice(0, 200))); } catch {}
+  db.saveSync(KEY, state.slice(0, 200));
   listeners.forEach(l => l());
 }
 

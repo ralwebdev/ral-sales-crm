@@ -49,6 +49,8 @@ const ROLE_CHIPS: { value: ChipRole; label: string; icon: typeof Crown; subtitle
   { value: "alliance_executive", label: "Alliance Executive", icon: HeartHandshake, subtitle: "On-ground alliance visits and follow-ups.", tier: "ops" },
 ];
 
+import { db } from "@/lib/db";
+
 /* ───────── Lockout helpers (localStorage) ───────── */
 
 const LOCK_KEY = "ral_login_lock_v1";
@@ -58,9 +60,9 @@ const LOCK_WINDOW_MS = 2 * 60 * 1000;
 interface LockState { count: number; lockedUntil?: number }
 
 const readLock = (): LockState => {
-  try { return JSON.parse(localStorage.getItem(LOCK_KEY) || "{}"); } catch { return { count: 0 }; }
+  return db.getSync(LOCK_KEY) || { count: 0 };
 };
-const writeLock = (s: LockState) => localStorage.setItem(LOCK_KEY, JSON.stringify(s));
+const writeLock = (s: LockState) => db.saveSync(LOCK_KEY, s);
 
 /* ───────── Suspicious-device fingerprint ───────── */
 
@@ -146,12 +148,10 @@ export default function LoginPage() {
 
   // Suspicious-device check
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(FP_KEY);
-      const fp = computeFp();
-      if (stored && stored !== fp) setSuspicious(true);
-      if (!stored) localStorage.setItem(FP_KEY, fp);
-    } catch { /* ignore */ }
+    const stored = db.getSync<string>(FP_KEY);
+    const fp = computeFp();
+    if (stored && stored !== fp) setSuspicious(true);
+    if (!stored) db.saveSync(FP_KEY, fp);
   }, []);
 
   const lockedRemainingMs = lock.lockedUntil && lock.lockedUntil > now ? lock.lockedUntil - now : 0;

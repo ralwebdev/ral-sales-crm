@@ -351,38 +351,35 @@ export function confetti() {
   setTimeout(() => root.remove(), 1800);
 }
 
+import { db } from "@/lib/db";
+
 /* ───── Gamification helpers ───── */
 const STREAK_KEY = "alliance_streak";
 export function useStreak(userId?: string) {
   const [streak, setStreak] = useState(0);
   useEffect(() => {
     if (!userId) return;
-    try {
-      const raw = localStorage.getItem(`${STREAK_KEY}_${userId}`);
-      if (raw) {
-        const { count, last } = JSON.parse(raw);
-        const today = todayIso();
-        const diff = daysBetween(today, last);
-        if (diff === 0) setStreak(count);
-        else if (diff === 1) setStreak(count); // yesterday — still counts until today's update
-        else setStreak(0);
-      }
-    } catch { /* noop */ }
+    const data = db.getSync<{ count: number; last: string }>(`${STREAK_KEY}_${userId}`);
+    if (data) {
+      const { count, last } = data;
+      const today = todayIso();
+      const diff = daysBetween(today, last);
+      if (diff === 0) setStreak(count);
+      else if (diff === 1) setStreak(count); // yesterday — still counts until today's update
+      else setStreak(0);
+    }
   }, [userId]);
   const bump = () => {
     if (!userId) return;
     const today = todayIso();
-    try {
-      const raw = localStorage.getItem(`${STREAK_KEY}_${userId}`);
-      let count = 1;
-      if (raw) {
-        const prev = JSON.parse(raw);
-        const diff = daysBetween(today, prev.last);
-        count = diff === 0 ? prev.count : diff === 1 ? prev.count + 1 : 1;
-      }
-      localStorage.setItem(`${STREAK_KEY}_${userId}`, JSON.stringify({ count, last: today }));
-      setStreak(count);
-    } catch { /* noop */ }
+    const prev = db.getSync<{ count: number; last: string }>(`${STREAK_KEY}_${userId}`);
+    let count = 1;
+    if (prev) {
+      const diff = daysBetween(today, prev.last);
+      count = diff === 0 ? prev.count : diff === 1 ? prev.count + 1 : 1;
+    }
+    db.saveSync(`${STREAK_KEY}_${userId}`, { count, last: today });
+    setStreak(count);
   };
   return { streak, bump };
 }

@@ -18,22 +18,20 @@ export interface PiTiMapping {
   reason?: string;
 }
 
+import { db } from "./db";
+
 const KEY = "ral_pi_ti_mappings_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
 function load(): PiTiMapping[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [];
+  return db.getSync(KEY) || [];
 }
 
 let state: PiTiMapping[] = typeof window !== "undefined" ? load() : [];
 
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
+  db.saveSync(KEY, state);
   listeners.forEach(l => l());
 }
 

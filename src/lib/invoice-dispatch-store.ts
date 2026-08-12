@@ -62,6 +62,8 @@ export interface InvoiceDispatch {
   audit: DispatchAuditEntry[];
 }
 
+import { db } from "./db";
+
 const KEY = "ral_invoice_dispatch_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -73,18 +75,14 @@ const uid = (p: string) =>
 const nowIso = () => new Date().toISOString();
 
 function load(): State {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { items: [] };
+  return db.getSync(KEY) || { items: [] };
 }
 
 let state: State = typeof window !== "undefined" ? load() : { items: [] };
 
 function save(s: State) {
   state = s;
-  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* ignore */ }
+  db.saveSync(KEY, s);
   listeners.forEach(l => l());
 }
 

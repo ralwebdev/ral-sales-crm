@@ -27,15 +27,15 @@ const CHART_COLORS = [
   "hsl(320, 70%, 50%)", "hsl(45, 90%, 45%)",
 ];
 
+import { db } from "@/lib/db";
+
 const STORAGE_KEY = "crm_revenue_targets";
 
 function getTargets() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) return JSON.parse(stored);
-  return { monthlyTarget: 600000, roasTarget: 10, maxCPA: 6500 };
+  return db.getSync(STORAGE_KEY) || { monthlyTarget: 600000, roasTarget: 10, maxCPA: 6500 };
 }
 function saveTargets(t: { monthlyTarget: number; roasTarget: number; maxCPA: number }) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(t));
+  db.saveSync(STORAGE_KEY, t);
 }
 
 export default function RevenueAnalyticsPage() {

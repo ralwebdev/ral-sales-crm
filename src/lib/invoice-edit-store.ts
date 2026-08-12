@@ -32,6 +32,8 @@ export interface InvoiceEditEntry {
   device?: string;
 }
 
+import { db } from "./db";
+
 const KEY = "ral_invoice_edits_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -43,18 +45,14 @@ const uid = (p: string) =>
 const nowIso = () => new Date().toISOString();
 
 function load(): State {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { entries: [] };
+  return db.getSync(KEY) || { entries: [] };
 }
 
 let state: State = typeof window !== "undefined" ? load() : { entries: [] };
 
 function save(s: State) {
   state = s;
-  try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* ignore */ }
+  db.saveSync(KEY, s);
   listeners.forEach(l => l());
 }
 

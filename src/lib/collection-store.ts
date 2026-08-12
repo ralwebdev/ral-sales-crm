@@ -174,6 +174,8 @@ export interface Collection {
   createdAt: string;
 }
 
+import { db } from "./db";
+
 const KEY = "ral_collections_v1";
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -181,65 +183,18 @@ const listeners = new Set<Listener>();
 const uid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-4)}`;
 
 function load(): Collection[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return seed();
+  return db.getSync(KEY, seed()) || [];
 }
 
 function seed(): Collection[] {
-  const now = Date.now();
-  const daysAgo = (d: number) => new Date(now - d * 86400000).toISOString();
-  const make = (over: Partial<Collection>): Collection => ({
-    id: uid("col"),
-    receiptRef: `RC-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
-    studentId: "s_seed",
-    studentName: "Seed Student",
-    courseName: "UI/UX Design",
-    branch: "Kolkata - Park Street",
-    amount: 5000,
-    mode: "cash",
-    reason: "admission_fee",
-    collectedAt: daysAgo(0),
-    collectedById: "u5",
-    collectedByName: "Manjari Chakraborty",
-    collectorRole: "counselor",
-    status: "Collected",
-    audit: [],
-    createdAt: daysAgo(0),
-    ...over,
-  });
-  return [
-    make({
-      studentName: "Aarav Patel", courseName: "UI/UX Design", amount: 25000, reason: "admission_fee",
-      mode: "upi", status: "Awaiting Verification", collectedAt: daysAgo(1),
-    }),
-    make({
-      studentName: "Diya Roy", courseName: "Digital Marketing", amount: 12500, reason: "emi_payment",
-      mode: "cash", status: "Awaiting Verification", collectedAt: daysAgo(0),
-    }),
-    make({
-      studentName: "Karan Mehta", courseName: "Full Stack Dev", amount: 50000, reason: "admission_fee",
-      mode: "bank_transfer", status: "Verified", collectedAt: daysAgo(3),
-      verifiedAmount: 50000, verificationMode: "bank_statement",
-      verifiedById: "u1", verifiedByName: "Amit Sharma", verifiedAt: daysAgo(2),
-    }),
-    make({
-      studentName: "Riya Ghosh", courseName: "Graphic Design", amount: 5000, reason: "id_card_charge",
-      mode: "cash", status: "Mismatch", collectedAt: daysAgo(2),
-      verifiedAmount: 4500, mismatchAmount: 500, verificationMode: "cash_in_hand",
-      verifiedById: "u1", verifiedByName: "Amit Sharma", verifiedAt: daysAgo(1),
-      verificationRemarks: "₹500 short in cash count.",
-    }),
-  ];
+  return [];
 }
 
 let state: Collection[] = typeof window !== "undefined" ? load() : [];
 
 function save(next: Collection[]) {
   state = next;
-  try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
+  db.saveSync(KEY, next);
   listeners.forEach(l => l());
 }
 
